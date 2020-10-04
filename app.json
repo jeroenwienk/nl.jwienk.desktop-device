@@ -1,0 +1,139 @@
+{
+  "id": "nl.jwienk.desktop",
+  "version": "1.0.0",
+  "compatibility": ">=5.0.0",
+  "sdk": 3,
+  "name": {
+    "en": "Desktop"
+  },
+  "description": {
+    "en": "Desktop"
+  },
+  "category": [
+    "tools"
+  ],
+  "permissions": [],
+  "images": {
+    "large": "/assets/images/large.png",
+    "small": "/assets/images/small.png"
+  },
+  "author": {
+    "name": "Jeroen Wienk",
+    "email": "jeroenwienk@gmail.com"
+  },
+  "api": {
+    "addSomething": {
+      "method": "post",
+      "path": "/",
+      "public": true
+    },
+    "getSomething": {
+      "method": "get",
+      "path": "/",
+      "public": true
+    }
+  },
+  "flow": {
+    "actions": [
+      {
+        "id": "command",
+        "title": {
+          "en": "Command"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=desktop"
+          },
+          {
+            "type": "autocomplete",
+            "name": "command",
+            "placeholder": {
+              "en": "Search for things..."
+            }
+          }
+        ]
+      },
+      {
+        "id": "action_browser_open",
+        "title": {
+          "en": "Open url"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=desktop"
+          },
+          {
+            "type": "text",
+            "name": "url",
+            "placeholder": {
+              "en": "URL"
+            }
+          }
+        ]
+      },
+      {
+        "id": "action_path_open",
+        "title": {
+          "en": "Open path"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=desktop"
+          },
+          {
+            "type": "text",
+            "name": "path",
+            "placeholder": {
+              "en": "Path"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "drivers": [
+    {
+      "id": "desktop",
+      "name": {
+        "en": "Desktop"
+      },
+      "class": "other",
+      "capabilities": [
+        "onoff"
+      ],
+      "pair": [
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "images": {
+        "large": "/drivers/mypc/assets/images/large.png",
+        "small": "/drivers/mypc/assets/images/small.png"
+      }
+    }
+  ],
+  "discovery": {
+    "desktop": {
+      "type": "mdns-sd",
+      "mdns-sd": {
+        "name": "homeydesktop",
+        "protocol": "tcp"
+      },
+      "id": "{{txt.id}}"
+    }
+  }
+}

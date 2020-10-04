@@ -1,0 +1,34 @@
+{
+  "id": "nl.jwienk.desktop",
+  "version": "1.0.0",
+  "compatibility": ">=5.0.0",
+  "sdk": 3,
+  "name": {
+    "en": "Desktop"
+  },
+  "description": {
+    "en": "Desktop"
+  },
+  "category": [
+    "tools"
+  ],
+  "permissions": [],
+  "images": {
+    "large": "/assets/images/large.png",
+    "small": "/assets/images/small.png"
+  },
+  "author": {
+    "name": "Jeroen Wienk",
+    "email": "jeroenwienk@gmail.com"
+  },
+  "api": {
+    "addSomething": {
+      "method": "post",
+      "path": "/"
+    },
+    "getSomething": {
+      "method": "get",
+      "path": "/"
+    }
+  }
+}

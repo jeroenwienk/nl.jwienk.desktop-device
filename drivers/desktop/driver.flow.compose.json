@@ -1,0 +1,49 @@
+{
+  "actions": [
+    {
+      "id": "command",
+      "title": {
+        "en": "Command"
+      },
+      "args": [
+        {
+          "type": "autocomplete",
+          "name": "command",
+          "placeholder": {
+            "en": "Search for things..."
+          }
+        }
+      ]
+    },
+    {
+      "id": "action_browser_open",
+      "title": {
+        "en": "Open url"
+      },
+      "args": [
+        {
+          "type": "text",
+          "name": "url",
+          "placeholder": {
+            "en": "URL"
+          }
+        }
+      ]
+    },
+    {
+      "id": "action_path_open",
+      "title": {
+        "en": "Open path"
+      },
+      "args": [
+        {
+          "type": "text",
+          "name": "path",
+          "placeholder": {
+            "en": "Path"
+          }
+        }
+      ]
+    }
+  ]
+}
