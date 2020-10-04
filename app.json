@@ -24,13 +24,11 @@
   "api": {
     "addSomething": {
       "method": "post",
-      "path": "/",
-      "public": true
+      "path": "/"
     },
     "getSomething": {
       "method": "get",
-      "path": "/",
-      "public": true
+      "path": "/"
     }
   },
   "flow": {
