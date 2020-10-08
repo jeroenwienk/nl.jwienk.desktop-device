@@ -52,10 +52,25 @@ class DesktopDriver extends Homey.Device {
       console.log('reconnect_failed:', error);
     });
 
-    this.socket.on('init:commands', (data) => {
-      console.log('init:commands:', data);
+    this.socket.on('commands:sync', (data) => {
+      console.log('commands:sync', data);
       this.commands = data.commands;
     });
+
+    this.socket.on('buttons:sync', (data) => {
+      console.log('buttons:sync', data);
+      this.buttons = data.buttons
+    })
+
+    this.socket.on('button:run', (data, callback) => {
+      console.log('button:run', data);
+
+      this.driver.triggerDeviceButtonCard.trigger(this, { token: 1 }, data)
+        .then(() => {
+          // TODO: ask what is the use of this?
+        })
+        .catch(this.error);
+    })
   }
 
   ready() {

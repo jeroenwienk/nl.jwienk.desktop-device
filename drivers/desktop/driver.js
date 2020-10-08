@@ -10,41 +10,9 @@ class DesktopDriver extends Homey.Driver {
       this.log('driver:ready');
     });
 
-    const commandAction = this.homey.flow.getActionCard('command');
+    this.triggerDeviceButtonCard = this.homey.flow.getDeviceTriggerCard('trigger_button');
 
-    commandAction.registerRunListener(async (args, state) => {
-      const { device, command } = args;
-      device.socket.emit(
-        'run:commands',
-        { commands: [command] },
-        (response) => {
-          console.log('response:', response);
-        }
-      );
-      return true;
-    });
-
-    commandAction.registerArgumentAutocompleteListener(
-      'command',
-      async (query, args) => {
-        const { device } = args;
-        const commands = device.commands != null ? device.commands : [];
-
-        return commands.map((command) => {
-          return {
-            id: command.id,
-            name: command.name,
-            description: command.description,
-          };
-        });
-      }
-    );
-
-    commandAction.on('update', (...args) => {
-      // This event is fired when the card is updated by the user (e.g. a Flow has been saved).
-      console.log('commandAction:update');
-    });
-
+    this.registerTriggerButton();
     this.registerActionBrowserOpen();
     this.registerActionPathOpen();
   }
@@ -75,20 +43,61 @@ class DesktopDriver extends Homey.Driver {
     });
   }
 
+  registerTriggerButton() {
+    this.triggerDeviceButtonCard.registerRunListener(async (args, state) => {
+      const { device, button } = args;
+
+
+      if (state.id === button.id) {
+        // TODO: create issue about ghost error;
+        try {
+          device.socket.emit('button:run:success', button)
+        } catch (error) {
+          console.log(error);
+        }
+
+        return true;
+      }
+
+      return false
+    });
+
+    this.triggerDeviceButtonCard.registerArgumentAutocompleteListener(
+      'button',
+      async (query, args) => {
+        const { device } = args;
+        const buttons = device.buttons != null ? device.buttons : [];
+
+        return buttons.map((button) => {
+          return {
+            id: button.id,
+            name: button.name,
+            description: button.description,
+          };
+        });
+      }
+    );
+
+    this.triggerDeviceButtonCard.on('update', () => {
+      console.log('trigger:device:button:flow:save');
+      // this.triggerDeviceButtonCard.getArgumentValues()
+    });
+  }
+
   registerActionBrowserOpen() {
     const action = this.homey.flow.getActionCard('action_browser_open');
 
     action.registerRunListener(async (args, state) => {
       const { device, url } = args;
 
-      device.socket.emit('run:browser:open', { url: url }, (response) => {
-        console.log('run:browser:open:response:', response);
+      device.socket.emit('browser:open:run', { url: url }, (response) => {
+        console.log('browser:open:run:response:', response);
       });
       return true;
     });
 
     action.on('update', () => {
-      console.log('browser:open:command:update', args);
+
     });
   }
 
@@ -98,14 +107,14 @@ class DesktopDriver extends Homey.Driver {
     action.registerRunListener(async (args, state) => {
       const { device, path } = args;
 
-      device.socket.emit('run:path:open', { path: path }, (response) => {
-        console.log('run:path:open:response:', response);
+      device.socket.emit('path:open:run', { path: path }, (response) => {
+        console.log('path:open:run:response:', response);
       });
       return true;
     });
 
     action.on('update', () => {
-      console.log('browser:path:command:update', args);
+
     });
   }
 }

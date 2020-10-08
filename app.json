@@ -32,11 +32,11 @@
     }
   },
   "flow": {
-    "actions": [
+    "triggers": [
       {
-        "id": "command",
+        "id": "trigger_button",
         "title": {
-          "en": "Command"
+          "en": "Button"
         },
         "args": [
           {
@@ -46,13 +46,15 @@
           },
           {
             "type": "autocomplete",
-            "name": "command",
+            "name": "button",
             "placeholder": {
               "en": "Search for things..."
             }
           }
         ]
-      },
+      }
+    ],
+    "actions": [
       {
         "id": "action_browser_open",
         "title": {
