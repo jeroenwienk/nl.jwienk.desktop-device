@@ -10,7 +10,7 @@
           "type": "autocomplete",
           "name": "button",
           "placeholder": {
-            "en": "Search for things..."
+            "en": "Search for a button..."
           }
         }
       ]
@@ -44,6 +44,49 @@
           "placeholder": {
             "en": "Path"
           }
+        }
+      ]
+    },
+    {
+      "id": "action_notification_show",
+      "title": {
+        "en": "Create a desktop notification with..."
+      },
+      "titleFormatted": {
+        "en": "Create a desktop notification with title: [[title]] and message: [[body]] and [[silent]]"
+      },
+      "args": [
+        {
+          "type": "text",
+          "name": "title",
+          "placeholder": {
+            "en": "Title"
+          }
+        },
+        {
+          "type": "text",
+          "name": "body",
+          "placeholder": {
+            "en": "Message"
+          }
+        },
+        {
+          "type": "dropdown",
+          "name": "silent",
+          "values": [
+            {
+              "id": "true",
+              "label": {
+                "en": "Sound Disabled"
+              }
+            },
+            {
+              "id": "false",
+              "label": {
+                "en": "Sound Enabled"
+              }
+            }
+          ]
         }
       ]
     }

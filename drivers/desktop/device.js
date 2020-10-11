@@ -10,7 +10,13 @@ class DesktopDriver extends Homey.Device {
 
     this.socket = io(`http://${data.address}:${data.port}`, {
       path: '/desktop',
+      query: {
+        cloudId: this.homey.app.systemInfo.cloudId,
+        name: this.homey.app.systemName,
+      },
     });
+
+    console.log(this.homey);
 
     this.socket.on('connect', () => {
       console.log('connect:', this.socket.id);
@@ -57,25 +63,62 @@ class DesktopDriver extends Homey.Device {
       this.commands = data.commands;
     });
 
-    this.socket.on('buttons:sync', (data) => {
-      console.log('buttons:sync', data);
-      this.buttons = data.buttons
-    })
+    this.socket.on('buttons:sync', async (data, callback) => {
+      this.handleButtonsSync(data, callback);
+    });
 
     this.socket.on('button:run', (data, callback) => {
       console.log('button:run', data);
 
-      this.driver.triggerDeviceButtonCard.trigger(this, { token: 1 }, data)
+      this.driver.triggerDeviceButtonCard
+        .trigger(this, { token: 1 }, data)
         .then(() => {
           // TODO: ask what is the use of this?
         })
         .catch(this.error);
-    })
+    });
   }
 
   ready() {
     this.log('device:ready');
     this.setAvailable();
+  }
+
+  async handleButtonsSync(data, callback) {
+    console.log('buttons:sync', data);
+    this.buttons = data.buttons;
+    const flows = await this.homey.app.homeyAPI.flow.getFlows();
+
+    const filteredFlows = Object.values(flows).filter((flow) => {
+      return flow.trigger && flow.trigger.id === 'trigger_button';
+    });
+
+    const brokenFlows = filteredFlows.reduce((accumulator, flow) => {
+      if (flow.trigger.args.button) {
+        const button = this.buttons.find((button) => {
+          return flow.trigger.args.button.id === button.id;
+        });
+
+        if (
+          button &&
+          (button.name !== flow.trigger.args.button.name ||
+            button.description !== flow.trigger.args.button.description)
+        ) {
+          accumulator.push({
+            flow: flow,
+            button: button
+          });
+        } else {
+          accumulator.push({
+            flow: flow,
+            button: null
+          });
+        }
+      }
+      return accumulator;
+    }, []);
+
+    callback({ broken: brokenFlows });
   }
 
   // onDiscoveryResult(discoveryResult) {

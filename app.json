@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "compatibility": ">=5.0.0",
   "sdk": 3,
+  "brandColor": "#FF0000",
   "name": {
     "en": "Desktop"
   },
@@ -12,7 +13,9 @@
   "category": [
     "tools"
   ],
-  "permissions": [],
+  "permissions": [
+    "homey:manager:api"
+  ],
   "images": {
     "large": "/assets/images/large.png",
     "small": "/assets/images/small.png"
@@ -48,7 +51,7 @@
             "type": "autocomplete",
             "name": "button",
             "placeholder": {
-              "en": "Search for things..."
+              "en": "Search for a button..."
             }
           }
         ]
@@ -94,6 +97,54 @@
             }
           }
         ]
+      },
+      {
+        "id": "action_notification_show",
+        "title": {
+          "en": "Create a desktop notification with..."
+        },
+        "titleFormatted": {
+          "en": "Create a desktop notification with title: [[title]] and message: [[body]] and [[silent]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=desktop"
+          },
+          {
+            "type": "text",
+            "name": "title",
+            "placeholder": {
+              "en": "Title"
+            }
+          },
+          {
+            "type": "text",
+            "name": "body",
+            "placeholder": {
+              "en": "Message"
+            }
+          },
+          {
+            "type": "dropdown",
+            "name": "silent",
+            "values": [
+              {
+                "id": "true",
+                "label": {
+                  "en": "Sound Disabled"
+                }
+              },
+              {
+                "id": "false",
+                "label": {
+                  "en": "Sound Enabled"
+                }
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -121,8 +172,8 @@
         }
       ],
       "images": {
-        "large": "/drivers/mypc/assets/images/large.png",
-        "small": "/drivers/mypc/assets/images/small.png"
+        "small": "/drivers/desktop/assets/images/small.png",
+        "large": "/drivers/desktop/assets/images/large.png"
       }
     }
   ],

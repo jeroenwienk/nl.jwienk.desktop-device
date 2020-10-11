@@ -16,6 +16,7 @@
     ]
   },
   "dependencies": {
+    "athom-api": "^3.2.13",
     "socket.io-client": "^2.3.1"
   }
 }

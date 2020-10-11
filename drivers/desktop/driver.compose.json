@@ -19,7 +19,7 @@
     }
   ],
   "images": {
-    "large": "/drivers/mypc/assets/images/large.png",
-    "small": "/drivers/mypc/assets/images/small.png"
+    "small": "/drivers/desktop/assets/images/small.png",
+    "large": "/drivers/desktop/assets/images/large.png"
   }
 }
