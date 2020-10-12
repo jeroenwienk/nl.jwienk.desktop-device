@@ -12,17 +12,7 @@ class DesktopDriver extends Homey.Driver {
 
     this.triggerDeviceButtonCard = this.homey.flow.getDeviceTriggerCard('trigger_button');
 
-    console.log(this.triggerDeviceButtonCard.getArgument('button'));
-
-    console.log(this);
-
-    const flows = await this.homey.app.homeyAPI.flow.getFlows();
-
-    const filtered = Object.values(flows).filter((flow) => {
-      return flow.trigger && flow.trigger.id === 'trigger_button'
-    })
-
-    console.log(filtered);
+    console.log(this.triggerDeviceButtonCard);
 
     this.registerTriggerButton();
     this.registerActionBrowserOpen();
@@ -79,7 +69,7 @@ class DesktopDriver extends Homey.Driver {
       'button',
       async (query, args) => {
         const { device } = args;
-        const buttons = device.buttons != null ? device.buttons : [];
+        const buttons = device.getButtons();
 
         return buttons.map((button) => {
           return {
@@ -92,8 +82,9 @@ class DesktopDriver extends Homey.Driver {
     );
 
     this.triggerDeviceButtonCard.on('update', () => {
-      console.log('trigger:device:button:flow:save');
-      // this.triggerDeviceButtonCard.getArgumentValues()
+      this.getDevices().forEach((device) => {
+        device.socket.emit('flow:button:saved');
+      })
     });
   }
 
@@ -135,7 +126,7 @@ class DesktopDriver extends Homey.Driver {
     const action = this.homey.flow.getActionCard('action_notification_show');
 
     action.registerRunListener(async (args, state) => {
-      console.log(state);
+
       //console.log(args);
 
       const { device, title, body, silent } = args;
