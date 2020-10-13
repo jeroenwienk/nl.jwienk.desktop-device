@@ -2,6 +2,8 @@
 
 const Homey = require('homey');
 
+const { IO_ON, IO_EMIT } = require('./events');
+
 class DesktopDriver extends Homey.Driver {
   async onInit() {
     this.log('driver:onInit');
@@ -11,8 +13,6 @@ class DesktopDriver extends Homey.Driver {
     });
 
     this.triggerDeviceButtonCard = this.homey.flow.getDeviceTriggerCard('trigger_button');
-
-    console.log(this.triggerDeviceButtonCard);
 
     this.registerTriggerButton();
     this.registerActionBrowserOpen();
@@ -50,11 +50,10 @@ class DesktopDriver extends Homey.Driver {
     this.triggerDeviceButtonCard.registerRunListener(async (args, state) => {
       const { device, button } = args;
 
-
       if (state.id === button.id) {
         // TODO: create issue about ghost error;
         try {
-          device.socket.emit('button:run:success', button);
+          device.socket.emit(IO_EMIT.BUTTON_RUN_SUCCESS, button);
         } catch (error) {
           console.log(error);
         }
@@ -83,8 +82,8 @@ class DesktopDriver extends Homey.Driver {
 
     this.triggerDeviceButtonCard.on('update', () => {
       this.getDevices().forEach((device) => {
-        device.socket.emit('flow:button:saved');
-      })
+        device.socket.emit(IO_EMIT.FLOW_BUTTON_SAVED);
+      });
     });
   }
 
@@ -94,8 +93,10 @@ class DesktopDriver extends Homey.Driver {
     action.registerRunListener(async (args, state) => {
       const { device, url } = args;
 
-      device.socket.emit('browser:open:run', { url }, (response) => {
-        console.log('browser:open:run:response:', response);
+      device.socket.emit(IO_EMIT.BROWSER_OPEN_RUN, { url }, (error) => {
+        if (error) {
+          this.error(error);
+        }
       });
       return true;
     });
@@ -111,8 +112,10 @@ class DesktopDriver extends Homey.Driver {
     action.registerRunListener(async (args, state) => {
       const { device, path } = args;
 
-      device.socket.emit('path:open:run', { path }, (response) => {
-        console.log('path:open:run:response:', response);
+      device.socket.emit(IO_EMIT.PATH_OPEN_RUN, { path }, (error) => {
+        if (error) {
+          this.error(error);
+        }
       });
       return true;
     });
@@ -126,13 +129,12 @@ class DesktopDriver extends Homey.Driver {
     const action = this.homey.flow.getActionCard('action_notification_show');
 
     action.registerRunListener(async (args, state) => {
-
-      //console.log(args);
-
       const { device, title, body, silent } = args;
 
-      device.socket.emit('notification:show:run', { title, body, silent }, (response) => {
-        console.log('notification:show:run:response:', response);
+      device.socket.emit(IO_EMIT.NOTIFICATION_SHOW_RUN, { title, body, silent }, (error) => {
+        if (error) {
+          this.error(error);
+        }
       });
       return true;
     });

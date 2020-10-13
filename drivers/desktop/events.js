@@ -10,7 +10,6 @@ const IO_EMIT = {
 const IO_ON = {
   BUTTONS_SYNC: 'buttons:sync',
   BUTTON_RUN: 'button:run',
-  COMMANDS_SYNC: 'commands:sync'
 };
 
 

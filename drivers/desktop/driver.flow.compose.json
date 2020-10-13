@@ -3,7 +3,10 @@
     {
       "id": "trigger_button",
       "title": {
-        "en": "Button"
+        "en": "A button is pressed..."
+      },
+      "titleFormatted": {
+        "en": "[[button]] is pressed"
       },
       "args": [
         {

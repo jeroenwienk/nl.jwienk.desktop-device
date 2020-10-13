@@ -61,11 +61,6 @@ class DesktopDevice extends Homey.Device {
       console.log('reconnect_failed:', error);
     });
 
-    this.socket.on(IO_ON.COMMANDS_SYNC, (data) => {
-      console.log('commands:sync', data);
-      this.commands = data.commands;
-    });
-
     this.socket.on(IO_ON.BUTTONS_SYNC, (data, callback) => {
       this.handleButtonsSync(data, callback);
     });
@@ -83,6 +78,19 @@ class DesktopDevice extends Homey.Device {
   async handleButtonsSync(data, callback) {
     console.log('buttons:sync', data);
     const buttons = await this.setButtons(data.buttons);
+
+    // for (const button of buttons) {
+    //   await this.addCapability(`test.${button.id}`);
+    //   //console.log(this.getCapabilityOptions(`test.${button.id}`))
+    //   this.setCapabilityOptions(`test.${button.id}`, {
+    //     title: { en: button.name }
+    //   })
+    // }
+
+    // buttons.forEach(async button => {
+    //
+    // })
+
     const flows = await this.homey.app.homeyAPI.flow.getFlows();
 
     const filteredFlows = Object.values(flows).filter((flow) => {
@@ -126,15 +134,12 @@ class DesktopDevice extends Homey.Device {
 
   async handleButtonRun(data, callback) {
     console.log('button:run', data);
-
     try {
       await this.driver.triggerDeviceButtonCard
         .trigger(this, { token: 1 }, data);
     } catch (error) {
       this.error(error);
     }
-
-
   }
 
   getButtons() {

@@ -1,0 +1,21 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "My Button"
+  },
+  "getable": false,
+  "setable": true,
+  "uiComponent": "button",
+  "uiQuickAction": false,
+  "icon": "/assets/icon.svg",
+  "$flow": {
+    "triggers": [
+      {
+        "id": "press",
+        "title": {
+          "en": "Press the button"
+        }
+      }
+    ]
+  }
+}
