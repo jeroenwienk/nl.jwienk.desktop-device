@@ -6,7 +6,8 @@ const { IO_ON, IO_EMIT } = require('./events');
 
 class DesktopDevice extends Homey.Device {
   static KEYS = {
-    BUTTONS: 'buttons'
+    BUTTONS: 'buttons',
+    ACCELERATORS: 'accelerators'
   };
 
   onInit() {
@@ -67,6 +68,14 @@ class DesktopDevice extends Homey.Device {
 
     this.socket.on(IO_ON.BUTTON_RUN, (data, callback) => {
       this.handleButtonRun(data, callback);
+    });
+
+    this.socket.on(IO_ON.ACCELERATORS_SYNC, (data, callback) => {
+      this.handleAcceleratorsSync(data, callback);
+    });
+
+    this.socket.on(IO_ON.ACCELERATOR_RUN, (data, callback) => {
+      this.handleAcceleratorRun(data, callback);
     });
   }
 
@@ -142,6 +151,22 @@ class DesktopDevice extends Homey.Device {
     }
   }
 
+  async handleAcceleratorsSync(data, callback) {
+    console.log('accelerators:sync', data);
+    const accelerators = await this.setAccelerators(data.accelerators);
+    callback({ broken: [] });
+  }
+
+  async handleAcceleratorRun(data, callback) {
+    console.log('accelerator:run', data);
+    try {
+      await this.driver.triggerDeviceAcceleratorCard
+         .trigger(this, { token: 1 }, data);
+    } catch (error) {
+      this.error(error);
+    }
+  }
+
   getButtons() {
     const buttons = this.getStoreValue(DesktopDevice.KEYS.BUTTONS);
     return buttons ? buttons : [];
@@ -150,6 +175,16 @@ class DesktopDevice extends Homey.Device {
   async setButtons(buttons) {
     await this.setStoreValue(DesktopDevice.KEYS.BUTTONS, buttons);
     return this.getButtons();
+  }
+
+  getAccelerators() {
+    const accelerators = this.getStoreValue(DesktopDevice.KEYS.ACCELERATORS);
+    return accelerators ? accelerators : [];
+  }
+
+  async setAccelerators(accelerators) {
+    await this.setStoreValue(DesktopDevice.KEYS.ACCELERATORS, accelerators);
+    return this.getAccelerators();
   }
 }
 

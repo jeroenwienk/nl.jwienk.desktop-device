@@ -17,6 +17,24 @@
           }
         }
       ]
+    },
+    {
+      "id": "trigger_accelerator",
+      "title": {
+        "en": "A shorcut is pressed..."
+      },
+      "titleFormatted": {
+        "en": "[[accelerator]] is pressed"
+      },
+      "args": [
+        {
+          "type": "autocomplete",
+          "name": "accelerator",
+          "placeholder": {
+            "en": "Search for a shortcut..."
+          }
+        }
+      ]
     }
   ],
   "actions": [

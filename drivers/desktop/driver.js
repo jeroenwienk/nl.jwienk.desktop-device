@@ -13,8 +13,10 @@ class DesktopDriver extends Homey.Driver {
     });
 
     this.triggerDeviceButtonCard = this.homey.flow.getDeviceTriggerCard('trigger_button');
+    this.triggerDeviceAcceleratorCard = this.homey.flow.getDeviceTriggerCard('trigger_accelerator');
 
     this.registerTriggerButton();
+    this.registerTriggerAccelerator();
     this.registerActionBrowserOpen();
     this.registerActionPathOpen();
     this.registerActionNotificationShow();
@@ -83,6 +85,46 @@ class DesktopDriver extends Homey.Driver {
     this.triggerDeviceButtonCard.on('update', () => {
       this.getDevices().forEach((device) => {
         device.socket.emit(IO_EMIT.FLOW_BUTTON_SAVED);
+      });
+    });
+  }
+
+  registerTriggerAccelerator() {
+    this.triggerDeviceAcceleratorCard.registerRunListener(async (args, state) => {
+      const { device, accelerator } = args;
+
+      if (state.id === accelerator.id) {
+        try {
+          device.socket.emit(IO_EMIT.ACCELERATOR_RUN_SUCCESS, accelerator);
+        } catch (error) {
+          console.log(error);
+        }
+
+        return true;
+      }
+
+      return false;
+    });
+
+    this.triggerDeviceAcceleratorCard.registerArgumentAutocompleteListener(
+      'accelerator',
+      async (query, args) => {
+        const { device } = args;
+        const accelerators = device.getAccelerators();
+
+        return accelerators.map((accelerator) => {
+          return {
+            id: accelerator.id,
+            name: accelerator.keys,
+            description: accelerator.keys
+          };
+        });
+      }
+    );
+
+    this.triggerDeviceAcceleratorCard.on('update', () => {
+      this.getDevices().forEach((device) => {
+        device.socket.emit(IO_EMIT.FLOW_ACCELERATOR_SAVED);
       });
     });
   }
