@@ -2,7 +2,9 @@
 
 const Homey = require('homey');
 const io = require('socket.io-client');
+
 const { IO_ON, IO_EMIT } = require('./events');
+const { getBrokenButtons, getBrokenAccelerators } = require('./helpers');
 
 class DesktopDevice extends Homey.Device {
   static KEYS = {
@@ -85,59 +87,10 @@ class DesktopDevice extends Homey.Device {
   }
 
   async handleButtonsSync(data, callback) {
-    console.log('buttons:sync', data);
+    this.log('buttons:sync', data);
     const buttons = await this.setButtons(data.buttons);
-
-    // for (const button of buttons) {
-    //   await this.addCapability(`test.${button.id}`);
-    //   //console.log(this.getCapabilityOptions(`test.${button.id}`))
-    //   this.setCapabilityOptions(`test.${button.id}`, {
-    //     title: { en: button.name }
-    //   })
-    // }
-
-    // buttons.forEach(async button => {
-    //
-    // })
-
     const flows = await this.homey.app.homeyAPI.flow.getFlows();
-
-    const filteredFlows = Object.values(flows).filter((flow) => {
-      return flow.trigger && flow.trigger.id === 'trigger_button';
-    });
-
-    const broken = filteredFlows.reduce((accumulator, flow) => {
-      if (flow.trigger.args.button) {
-        const button = buttons.find((button) => {
-          return flow.trigger.args.button.id === button.id;
-        });
-
-        // either name or description doesnt match
-        if (
-          button &&
-          (button.name !== flow.trigger.args.button.name ||
-            button.description !== flow.trigger.args.button.description)
-        ) {
-          accumulator.push({
-            flow: flow,
-            button: button
-          });
-          return accumulator;
-
-        }
-
-        // there is a flow with a unknown button
-        if (button == null) {
-          accumulator.push({
-            flow: flow,
-            button: null
-          });
-          return accumulator
-        }
-      }
-      return accumulator;
-    }, []);
-
+    const broken = getBrokenButtons(buttons, flows)
     callback({ broken });
   }
 
@@ -146,15 +99,19 @@ class DesktopDevice extends Homey.Device {
     try {
       await this.driver.triggerDeviceButtonCard
         .trigger(this, { token: 1 }, data);
+      callback()
     } catch (error) {
       this.error(error);
+      callback(error)
     }
   }
 
   async handleAcceleratorsSync(data, callback) {
     console.log('accelerators:sync', data);
     const accelerators = await this.setAccelerators(data.accelerators);
-    callback({ broken: [] });
+    const flows = await this.homey.app.homeyAPI.flow.getFlows();
+    const broken = getBrokenAccelerators(accelerators, flows)
+    callback({ broken });
   }
 
   async handleAcceleratorRun(data, callback) {
@@ -162,8 +119,10 @@ class DesktopDevice extends Homey.Device {
     try {
       await this.driver.triggerDeviceAcceleratorCard
          .trigger(this, { token: 1 }, data);
+      callback()
     } catch (error) {
       this.error(error);
+      callback(error)
     }
   }
 

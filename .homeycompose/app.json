@@ -31,7 +31,8 @@
     },
     "getSomething": {
       "method": "get",
-      "path": "/"
+      "path": "/",
+      "public": true
     }
   }
 }

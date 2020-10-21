@@ -8,6 +8,7 @@ const IO_ON = {
 const IO_EMIT = {
   BROWSER_OPEN_RUN: 'browser:open:run',
   PATH_OPEN_RUN: 'path:open:run',
+  COMMAND_RUN: 'command:run',
   BUTTON_RUN_SUCCESS: 'button:run:success',
   BUTTON_RUN_ERROR: 'button:run:error',
   ACCELERATOR_RUN_SUCCESS: 'accelerator:run:success',

@@ -35,6 +35,34 @@
           }
         }
       ]
+    },
+    {
+      "id": "trigger_command",
+      "title": {
+        "en": "A command is executed..."
+      },
+      "titleFormatted": {
+        "en": "A command with output ID [[outputId]] is executed"
+      },
+      "args": [
+        {
+          "type": "text",
+          "name": "outputId",
+          "placeholder": {
+            "en": "Output ID"
+          }
+        }
+      ],
+      "tokens": [
+        {
+          "name": "output",
+          "type": "string",
+          "title": {
+            "en": "Output"
+          },
+          "example": "Command output"
+        }
+      ]
     }
   ],
   "actions": [
@@ -108,6 +136,63 @@
               }
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "action_command",
+      "title": {
+        "en": "Run a command..."
+      },
+      "titleFormatted": {
+        "en": "Run command [[command]] with timeout: [[timeout]] and working directory: [[cwd]] and output ID: [[outputId]]"
+      },
+      "hint": {
+        "en": "To do something with the output you can specify an output ID. Then use a when card in a different Flow that responds to your specified output ID."
+      },
+      "args": [
+        {
+          "type": "text",
+          "name": "command",
+          "title": {
+            "en": "Command"
+          },
+          "placeholder": {
+            "en": "cd /somefolder && git status"
+          }
+        },
+        {
+          "type": "text",
+          "name": "cwd",
+          "title": {
+            "en": "Working Directory"
+          },
+          "placeholder": {
+            "en": "/"
+          }
+        },
+        {
+          "type": "number",
+          "name": "timeout",
+          "title": {
+            "en": "Timeout"
+          },
+          "placeholder": {
+            "en": "0"
+          },
+          "min": 0,
+          "max": 100000,
+          "step": 1
+        },
+        {
+          "type": "text",
+          "name": "outputId",
+          "title": {
+            "en": "Output ID"
+          },
+          "placeholder": {
+            "en": "e.g. 1, output git status"
+          }
         }
       ]
     }

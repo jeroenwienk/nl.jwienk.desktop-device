@@ -14,12 +14,15 @@ class DesktopDriver extends Homey.Driver {
 
     this.triggerDeviceButtonCard = this.homey.flow.getDeviceTriggerCard('trigger_button');
     this.triggerDeviceAcceleratorCard = this.homey.flow.getDeviceTriggerCard('trigger_accelerator');
+    this.triggerDeviceCommandCard = this.homey.flow.getDeviceTriggerCard('trigger_command');
 
     this.registerTriggerButton();
     this.registerTriggerAccelerator();
+    this.registerTriggerCommand();
     this.registerActionBrowserOpen();
     this.registerActionPathOpen();
     this.registerActionNotificationShow();
+    this.registerActionCommand();
   }
 
   async onPairListDevices() {
@@ -129,6 +132,40 @@ class DesktopDriver extends Homey.Driver {
     });
   }
 
+  registerTriggerCommand() {
+    this.triggerDeviceCommandCard.registerRunListener(async (args, state) => {
+      const { device, outputId } = args;
+
+      if (state.outputId === outputId) {
+        return true;
+      }
+
+      return false;
+    });
+
+    this.triggerDeviceAcceleratorCard.registerArgumentAutocompleteListener(
+      'accelerator',
+      async (query, args) => {
+        const { device } = args;
+        const accelerators = device.getAccelerators();
+
+        return accelerators.map((accelerator) => {
+          return {
+            id: accelerator.id,
+            name: accelerator.keys,
+            description: accelerator.keys
+          };
+        });
+      }
+    );
+
+    this.triggerDeviceAcceleratorCard.on('update', () => {
+      this.getDevices().forEach((device) => {
+        device.socket.emit(IO_EMIT.FLOW_ACCELERATOR_SAVED);
+      });
+    });
+  }
+
   registerActionBrowserOpen() {
     const action = this.homey.flow.getActionCard('action_browser_open');
 
@@ -179,6 +216,51 @@ class DesktopDriver extends Homey.Driver {
         }
       });
       return true;
+    });
+
+    action.on('update', () => {
+
+    });
+  }
+
+  registerActionCommand() {
+    const action = this.homey.flow.getActionCard('action_command');
+
+    action.registerRunListener(async (args, state) => {
+      const { device, command, cwd, timeout, outputId } = args;
+
+      const emit = () => new Promise((resolve, reject) => {
+        device.socket.emit(IO_EMIT.COMMAND_RUN, { command, cwd, timeout }, (error, result) => {
+          if (error) {
+            reject(error)
+          }
+
+          resolve(result);
+        });
+      })
+
+      try {
+        const result = await emit()
+
+        // TODO: when!
+        if (result.stderr.length > 0) {
+
+        }
+
+        this.triggerDeviceCommandCard
+          .trigger(device, { output: result.stdout }, { outputId });
+
+        return true
+      } catch (error) {
+
+        if (error.stderr != null) {
+          this.triggerDeviceCommandCard
+            .trigger(device, { output: error.stderr }, { outputId });
+          return true;
+        }
+
+        return false
+      }
     });
 
     action.on('update', () => {
