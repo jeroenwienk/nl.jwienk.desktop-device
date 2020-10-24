@@ -35,9 +35,10 @@ class DesktopDriver extends Homey.Driver {
     return discoveryResults.map((discoveryResult) => {
       this.log(discoveryResult);
       return {
-        name: discoveryResult.txt.name,
+        name: discoveryResult.txt.hostname,
         data: {
-          id: discoveryResult.txt.id,
+          id: discoveryResult.id,
+          mac: discoveryResult.txt.mac,
           address: discoveryResult.address,
           host: discoveryResult.host,
           port: discoveryResult.port,
@@ -45,7 +46,12 @@ class DesktopDriver extends Homey.Driver {
           fullname: discoveryResult.fullname
         },
         store: {
-          address: discoveryResult.address
+          id: discoveryResult.txt.id,
+          mac: discoveryResult.txt.mac,
+          address: discoveryResult.address,
+          port: discoveryResult.txt.port,
+          platform: discoveryResult.txt.platform,
+          hostname: discoveryResult.txt.hostname
         }
       };
     });
@@ -143,26 +149,8 @@ class DesktopDriver extends Homey.Driver {
       return false;
     });
 
-    this.triggerDeviceAcceleratorCard.registerArgumentAutocompleteListener(
-      'accelerator',
-      async (query, args) => {
-        const { device } = args;
-        const accelerators = device.getAccelerators();
+    this.triggerDeviceCommandCard.on('update', () => {
 
-        return accelerators.map((accelerator) => {
-          return {
-            id: accelerator.id,
-            name: accelerator.keys,
-            description: accelerator.keys
-          };
-        });
-      }
-    );
-
-    this.triggerDeviceAcceleratorCard.on('update', () => {
-      this.getDevices().forEach((device) => {
-        device.socket.emit(IO_EMIT.FLOW_ACCELERATOR_SAVED);
-      });
     });
   }
 
@@ -241,6 +229,7 @@ class DesktopDriver extends Homey.Driver {
 
       try {
         const result = await emit()
+        this.log(result)
 
         // TODO: when!
         if (result.stderr.length > 0) {
@@ -252,6 +241,7 @@ class DesktopDriver extends Homey.Driver {
 
         return true
       } catch (error) {
+        this.error(error)
 
         if (error.stderr != null) {
           this.triggerDeviceCommandCard
@@ -259,7 +249,9 @@ class DesktopDriver extends Homey.Driver {
           return true;
         }
 
-        return false
+        this.triggerDeviceCommandCard
+          .trigger(device, { output: JSON.stringify(error) }, { outputId });
+        return false;
       }
     });
 

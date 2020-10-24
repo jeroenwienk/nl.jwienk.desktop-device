@@ -1,6 +1,7 @@
-function getBrokenButtons(buttons, flows) {
+function getBrokenButtons(buttons, flows, device) {
   const filteredFlows = Object.values(flows).filter((flow) => {
-    return flow.trigger && flow.trigger.id === 'trigger_button';
+    return flow.trigger && flow.trigger.id === 'trigger_button'
+      && flow.trigger.uri === `homey:device:${device.apiId}`;
   });
 
   return filteredFlows.reduce((accumulator, flow) => {
@@ -29,16 +30,17 @@ function getBrokenButtons(buttons, flows) {
           flow: flow,
           button: null
         });
-        return accumulator
+        return accumulator;
       }
     }
     return accumulator;
   }, []);
 }
 
-function getBrokenAccelerators(accelerators, flows) {
+function getBrokenAccelerators(accelerators, flows, device) {
   const filteredFlows = Object.values(flows).filter((flow) => {
-    return flow.trigger && flow.trigger.id === 'trigger_accelerator';
+    return flow.trigger && flow.trigger.id === 'trigger_accelerator'
+      && flow.trigger.uri === `homey:device:${device.apiId}`;
   });
 
   return filteredFlows.reduce((accumulator, flow) => {
@@ -66,7 +68,7 @@ function getBrokenAccelerators(accelerators, flows) {
           flow: flow,
           accelerator: null
         });
-        return accumulator
+        return accumulator;
       }
     }
     return accumulator;
@@ -76,4 +78,4 @@ function getBrokenAccelerators(accelerators, flows) {
 module.exports = {
   getBrokenButtons,
   getBrokenAccelerators
-}
+};

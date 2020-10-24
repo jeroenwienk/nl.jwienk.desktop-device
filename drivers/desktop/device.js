@@ -12,9 +12,24 @@ class DesktopDevice extends Homey.Device {
     ACCELERATORS: 'accelerators'
   };
 
-  onInit() {
+  async onInit() {
     this.log('device:onInit');
     const data = this.getData();
+
+    this.log(this.getStore());
+
+    const devices = await this.homey.app.homeyAPI.devices.getDevices({
+      filter: {
+        driverId: 'desktop',
+        driverUri: 'homey:app:nl.jwienk.desktop',
+      }
+    });
+
+    const device = Object.values(devices).find((device) => {
+      return device.data.id === data.id
+    })
+
+    this.apiId = device.id;
 
     this.socket = io(`http://${data.address}:${data.port}`, {
       path: '/desktop',
@@ -86,23 +101,38 @@ class DesktopDevice extends Homey.Device {
     this.setAvailable();
   }
 
+  onDiscoveryResult(discoveryResult) {
+    this.log('onDiscoveryResult', discoveryResult);
+    return discoveryResult.id === this.getData().id;
+  }
+
+  async onDiscoveryAvailable(discoveryResult) {
+    this.log('onDiscoveryAvailable', discoveryResult);
+  }
+
+  onDiscoveryAddressChanged(discoveryResult) {
+    this.log('onDiscoveryAddressChanged', discoveryResult);
+  }
+
+  onDiscoveryLastSeenChanged(discoveryResult) {
+    this.log('onLastSeenChanged', discoveryResult);
+  }
+
   async handleButtonsSync(data, callback) {
     this.log('buttons:sync', data);
     const buttons = await this.setButtons(data.buttons);
     const flows = await this.homey.app.homeyAPI.flow.getFlows();
-    const broken = getBrokenButtons(buttons, flows)
+    const broken = getBrokenButtons(buttons, flows, this);
     callback({ broken });
   }
 
-  async handleButtonRun(data, callback) {
+  async handleButtonRun(data) {
     console.log('button:run', data);
     try {
       await this.driver.triggerDeviceButtonCard
         .trigger(this, { token: 1 }, data);
-      callback()
     } catch (error) {
       this.error(error);
-      callback(error)
     }
   }
 
@@ -110,19 +140,17 @@ class DesktopDevice extends Homey.Device {
     console.log('accelerators:sync', data);
     const accelerators = await this.setAccelerators(data.accelerators);
     const flows = await this.homey.app.homeyAPI.flow.getFlows();
-    const broken = getBrokenAccelerators(accelerators, flows)
+    const broken = getBrokenAccelerators(accelerators, flows, this);
     callback({ broken });
   }
 
-  async handleAcceleratorRun(data, callback) {
+  async handleAcceleratorRun(data) {
     console.log('accelerator:run', data);
     try {
       await this.driver.triggerDeviceAcceleratorCard
-         .trigger(this, { token: 1 }, data);
-      callback()
+        .trigger(this, { token: 1 }, data);
     } catch (error) {
       this.error(error);
-      callback(error)
     }
   }
 

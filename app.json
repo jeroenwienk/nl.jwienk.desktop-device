@@ -274,6 +274,7 @@
   "drivers": [
     {
       "id": "desktop",
+      "discovery": "desktop",
       "name": {
         "en": "Desktop"
       },
@@ -287,6 +288,9 @@
           "template": "list_devices",
           "navigation": {
             "next": "add_devices"
+          },
+          "options": {
+            "singular": true
           }
         },
         {
