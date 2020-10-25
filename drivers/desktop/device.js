@@ -16,8 +16,6 @@ class DesktopDevice extends Homey.Device {
     this.log('device:onInit');
     const data = this.getData();
 
-    this.log(this.getStore());
-
     const devices = await this.homey.app.homeyAPI.devices.getDevices({
       filter: {
         driverId: 'desktop',
@@ -29,7 +27,7 @@ class DesktopDevice extends Homey.Device {
       return device.data.id === data.id
     })
 
-    this.apiId = device.id;
+    this.apiId = device ? device.id : null;
 
     this.socket = io(`http://${data.address}:${data.port}`, {
       path: '/desktop',
@@ -40,43 +38,43 @@ class DesktopDevice extends Homey.Device {
     });
 
     this.socket.on('connect', () => {
-      console.log('connect:', this.socket.id);
+      this.log('connect:', this.socket.id);
     });
 
     this.socket.on('disconnect', (reason) => {
-      console.log('disconnect:', reason);
+      this.log('disconnect:', reason);
     });
 
     this.socket.on('error', (error) => {
-      console.log('error:', error);
+      this.error('error:', error);
     });
 
     this.socket.on('connect_error', (error) => {
-      console.log('connect_error:', error);
+      //console.log('connect_error:', error);
     });
 
     this.socket.on('connect_timeout', (timeout) => {
-      console.log('connect_error:', timeout);
+      this.log('connect_error:', timeout);
     });
 
     this.socket.on('reconnect', (attemptNumber) => {
-      console.log('reconnect:', attemptNumber);
+      this.log('reconnect:', attemptNumber);
     });
 
     this.socket.on('reconnect_attempt', (attemptNumber) => {
-      console.log('reconnect_attempt:', attemptNumber);
+      //console.log('reconnect_attempt:', attemptNumber);
     });
 
     this.socket.on('reconnecting', (attemptNumber) => {
-      console.log('reconnecting:', attemptNumber);
+      //console.log('reconnecting:', attemptNumber);
     });
 
     this.socket.on('reconnect_error', (error) => {
-      console.log('reconnect_error:', error);
+      //console.log('reconnect_error:', error);
     });
 
     this.socket.on('reconnect_failed', () => {
-      console.log('reconnect_failed:', error);
+      this.log('reconnect_failed:');
     });
 
     this.socket.on(IO_ON.BUTTONS_SYNC, (data, callback) => {
@@ -102,7 +100,7 @@ class DesktopDevice extends Homey.Device {
   }
 
   onDiscoveryResult(discoveryResult) {
-    this.log('onDiscoveryResult', discoveryResult);
+    this.log('onDiscoveryResult');
     return discoveryResult.id === this.getData().id;
   }
 
@@ -119,7 +117,7 @@ class DesktopDevice extends Homey.Device {
   }
 
   async handleButtonsSync(data, callback) {
-    this.log('buttons:sync', data);
+    this.log('buttons:sync');
     const buttons = await this.setButtons(data.buttons);
     const flows = await this.homey.app.homeyAPI.flow.getFlows();
     const broken = getBrokenButtons(buttons, flows, this);
@@ -127,7 +125,7 @@ class DesktopDevice extends Homey.Device {
   }
 
   async handleButtonRun(data) {
-    console.log('button:run', data);
+    this.log('button:run', data);
     try {
       await this.driver.triggerDeviceButtonCard
         .trigger(this, { token: 1 }, data);
@@ -137,7 +135,7 @@ class DesktopDevice extends Homey.Device {
   }
 
   async handleAcceleratorsSync(data, callback) {
-    console.log('accelerators:sync', data);
+    this.log('accelerators:sync');
     const accelerators = await this.setAccelerators(data.accelerators);
     const flows = await this.homey.app.homeyAPI.flow.getFlows();
     const broken = getBrokenAccelerators(accelerators, flows, this);
@@ -145,7 +143,7 @@ class DesktopDevice extends Homey.Device {
   }
 
   async handleAcceleratorRun(data) {
-    console.log('accelerator:run', data);
+    this.log('accelerator:run', data);
     try {
       await this.driver.triggerDeviceAcceleratorCard
         .trigger(this, { token: 1 }, data);

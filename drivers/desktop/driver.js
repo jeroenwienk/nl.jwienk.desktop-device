@@ -66,7 +66,7 @@ class DesktopDriver extends Homey.Driver {
         try {
           device.socket.emit(IO_EMIT.BUTTON_RUN_SUCCESS, button);
         } catch (error) {
-          console.log(error);
+          this.error(error);
         }
 
         return true;
@@ -106,7 +106,7 @@ class DesktopDriver extends Homey.Driver {
         try {
           device.socket.emit(IO_EMIT.ACCELERATOR_RUN_SUCCESS, accelerator);
         } catch (error) {
-          console.log(error);
+          this.error(error);
         }
 
         return true;
