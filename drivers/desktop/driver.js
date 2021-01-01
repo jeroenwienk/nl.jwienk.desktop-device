@@ -62,7 +62,6 @@ class DesktopDriver extends Homey.Driver {
       const { device, button } = args;
 
       if (state.id === button.id) {
-        // TODO: create issue about ghost error;
         try {
           device.socket.emit(IO_EMIT.BUTTON_RUN_SUCCESS, button);
         } catch (error) {
@@ -220,16 +219,16 @@ class DesktopDriver extends Homey.Driver {
       const emit = () => new Promise((resolve, reject) => {
         device.socket.emit(IO_EMIT.COMMAND_RUN, { command, cwd, timeout }, (error, result) => {
           if (error) {
-            reject(error)
+            reject(error);
           }
 
           resolve(result);
         });
-      })
+      });
 
       try {
-        const result = await emit()
-        this.log(result)
+        const result = await emit();
+        this.log(result);
 
         // TODO: when!
         if (result.stderr.length > 0) {
@@ -239,9 +238,9 @@ class DesktopDriver extends Homey.Driver {
         this.triggerDeviceCommandCard
           .trigger(device, { output: result.stdout }, { outputId });
 
-        return true
+        return true;
       } catch (error) {
-        this.error(error)
+        this.error(error);
 
         if (error.stderr != null) {
           this.triggerDeviceCommandCard
