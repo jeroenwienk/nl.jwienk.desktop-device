@@ -19,18 +19,19 @@ class DesktopDevice extends Homey.Device {
     const devices = await this.homey.app.homeyAPI.devices.getDevices({
       filter: {
         driverId: 'desktop',
-        driverUri: 'homey:app:nl.jwienk.desktop',
+        driverUri: 'homey:app:nl.jwienk.desktop'
       }
     });
 
     const device = Object.values(devices).find((device) => {
-      return device.data.id === data.id
-    })
+      return device.data.id === data.id;
+    });
 
     this.apiId = device ? device.id : null;
 
-    this.socket = io(`http://${data.address}:${data.port}`, {
+    this.socket = io(`https://${data.address}:${data.port}`, {
       path: '/desktop',
+      rejectUnauthorized: false, // selfsigned certificate
       query: {
         cloudId: this.homey.app.systemInfo.cloudId,
         name: this.homey.app.systemName
@@ -50,7 +51,7 @@ class DesktopDevice extends Homey.Device {
     });
 
     this.socket.on('connect_error', (error) => {
-      //console.log('connect_error:', error);
+      this.log('connect_error:', error);
     });
 
     this.socket.on('connect_timeout', (timeout) => {
@@ -62,15 +63,15 @@ class DesktopDevice extends Homey.Device {
     });
 
     this.socket.on('reconnect_attempt', (attemptNumber) => {
-      //console.log('reconnect_attempt:', attemptNumber);
+      this.log('reconnect_attempt:', attemptNumber);
     });
 
     this.socket.on('reconnecting', (attemptNumber) => {
-      //console.log('reconnecting:', attemptNumber);
+      this.log('reconnecting:', attemptNumber);
     });
 
     this.socket.on('reconnect_error', (error) => {
-      //console.log('reconnect_error:', error);
+      this.log('reconnect_error:', error);
     });
 
     this.socket.on('reconnect_failed', () => {
