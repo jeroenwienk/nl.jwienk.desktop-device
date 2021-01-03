@@ -3,6 +3,7 @@ const IO_ON = {
   BUTTON_RUN: 'button:run',
   ACCELERATORS_SYNC: 'accelerators:sync',
   ACCELERATOR_RUN: 'accelerator:run',
+  DISPLAYS_SYNC: 'displays:sync'
 };
 
 const IO_EMIT = {
@@ -16,10 +17,11 @@ const IO_EMIT = {
   NOTIFICATION_SHOW_RUN: 'notification:show:run',
   FLOW_BUTTON_SAVED: 'flow:button:saved',
   FLOW_ACCELERATOR_SAVED: 'flow:accelerator:saved',
+  DISPLAY_SET_RUN: 'display:set:run'
 };
 
 
 module.exports = {
   IO_EMIT,
   IO_ON
-}
+};

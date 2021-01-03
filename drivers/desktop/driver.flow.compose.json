@@ -195,6 +195,34 @@
           }
         }
       ]
+    },
+    {
+      "id": "action_display_set",
+      "title": {
+        "en": "Set a display value..."
+      },
+      "titleFormatted": {
+        "en": "Set [[display]] to [[text]]"
+      },
+      "args": [
+        {
+          "type": "autocomplete",
+          "name": "display",
+          "placeholder": {
+            "en": "Search for a display..."
+          }
+        },
+        {
+          "type": "text",
+          "name": "text",
+          "title": {
+            "en": "Text"
+          },
+          "placeholder": {
+            "en": "Display value"
+          }
+        }
+      ]
     }
   ]
 }

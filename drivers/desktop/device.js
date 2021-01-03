@@ -9,7 +9,8 @@ const { getBrokenButtons, getBrokenAccelerators } = require('./helpers');
 class DesktopDevice extends Homey.Device {
   static KEYS = {
     BUTTONS: 'buttons',
-    ACCELERATORS: 'accelerators'
+    ACCELERATORS: 'accelerators',
+    DISPLAYS: 'displays'
   };
 
   async onInit() {
@@ -93,6 +94,10 @@ class DesktopDevice extends Homey.Device {
     this.socket.on(IO_ON.ACCELERATOR_RUN, (data, callback) => {
       this.handleAcceleratorRun(data, callback);
     });
+
+    this.socket.on(IO_ON.DISPLAYS_SYNC, (data, callback) => {
+      this.handleDisplaysSync(data, callback);
+    });
   }
 
   ready() {
@@ -153,6 +158,15 @@ class DesktopDevice extends Homey.Device {
     }
   }
 
+  async handleDisplaysSync(data, callback) {
+    this.log('displays:sync');
+    const displays = await this.setDisplays(data.displays);
+    // const flows = await this.homey.app.homeyAPI.flow.getFlows();
+    // const broken = getBrokenAccelerators(accelerators, flows, this);
+
+    callback({ broken: [] });
+  }
+
   getButtons() {
     const buttons = this.getStoreValue(DesktopDevice.KEYS.BUTTONS);
     return buttons ? buttons : [];
@@ -171,6 +185,16 @@ class DesktopDevice extends Homey.Device {
   async setAccelerators(accelerators) {
     await this.setStoreValue(DesktopDevice.KEYS.ACCELERATORS, accelerators);
     return this.getAccelerators();
+  }
+
+  getDisplays() {
+    const displays = this.getStoreValue(DesktopDevice.KEYS.DISPLAYS);
+    return displays ? displays : [];
+  }
+
+  async setDisplays(displays) {
+    await this.setStoreValue(DesktopDevice.KEYS.DISPLAYS, displays);
+    return this.getDisplays();
   }
 }
 
