@@ -4,7 +4,7 @@ const Homey = require('homey');
 const io = require('socket.io-client');
 
 const { IO_ON, IO_EMIT } = require('./events');
-const { getBrokenButtons, getBrokenAccelerators } = require('./helpers');
+const { getBrokenButtons, getBrokenAccelerators, getBrokenDisplays } = require('./helpers');
 
 class DesktopDevice extends Homey.Device {
   static KEYS = {
@@ -161,10 +161,9 @@ class DesktopDevice extends Homey.Device {
   async handleDisplaysSync(data, callback) {
     this.log('displays:sync');
     const displays = await this.setDisplays(data.displays);
-    // const flows = await this.homey.app.homeyAPI.flow.getFlows();
-    // const broken = getBrokenAccelerators(accelerators, flows, this);
-
-    callback({ broken: [] });
+    const flows = await this.homey.app.homeyAPI.flow.getFlows();
+    const broken = getBrokenDisplays(displays, flows, this);
+    callback({ broken });
   }
 
   getButtons() {

@@ -75,7 +75,52 @@ function getBrokenAccelerators(accelerators, flows, device) {
   }, []);
 }
 
+function getBrokenDisplays(displays, flows, device) {
+  const filteredFlows = Object.values(flows).filter((flow) => {
+    return flow.actions && flow.actions.some((action) => action.id === 'action_display_set'
+      && action.uri === `homey:device:${device.apiId}`);
+  });
+
+  return filteredFlows.reduce((accumulator, flow) => {
+
+    const actions = flow.actions.filter((action) => {
+      return action.args.display != null;
+    });
+
+    actions.forEach((action) => {
+      const display = displays.find((display) => {
+        return action.args.display.id === display.id;
+      });
+
+      // either name or description doesnt match
+      if (
+        display &&
+        (display.name !== action.args.display.name ||
+          display.description !== action.args.display.description)
+      ) {
+        accumulator.push({
+          flow: flow,
+          display: display,
+          action: action
+        });
+      }
+
+      // there is a flow with a unknown button
+      if (display == null) {
+        accumulator.push({
+          flow: flow,
+          display: null,
+          action: action
+        });
+
+      }
+    });
+    return accumulator;
+  }, []);
+}
+
 module.exports = {
   getBrokenButtons,
-  getBrokenAccelerators
+  getBrokenAccelerators,
+  getBrokenDisplays
 };

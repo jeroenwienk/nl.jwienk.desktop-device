@@ -291,9 +291,9 @@ class DesktopDriver extends Homey.Driver {
     );
 
     action.on('update', () => {
-      // this.getDevices().forEach((device) => {
-      //   device.socket.emit(IO_EMIT.FLOW_ACCELERATOR_SAVED);
-      // });
+      this.getDevices().forEach((device) => {
+        device.socket.emit(IO_EMIT.FLOW_DISPLAY_SAVED);
+      });
     });
   }
 }

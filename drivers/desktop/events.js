@@ -17,6 +17,7 @@ const IO_EMIT = {
   NOTIFICATION_SHOW_RUN: 'notification:show:run',
   FLOW_BUTTON_SAVED: 'flow:button:saved',
   FLOW_ACCELERATOR_SAVED: 'flow:accelerator:saved',
+  FLOW_DISPLAY_SAVED: 'flow:display:saved',
   DISPLAY_SET_RUN: 'display:set:run'
 };
 
