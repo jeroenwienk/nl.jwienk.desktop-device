@@ -20,7 +20,7 @@ class DesktopDevice extends Homey.Device {
     const devices = await this.homey.app.homeyAPI.devices.getDevices({
       filter: {
         driverId: 'desktop',
-        driverUri: 'homey:app:nl.jwienk.desktop'
+        driverUri: 'homey:app:nl.jwienk.desktop-device'
       }
     });
 

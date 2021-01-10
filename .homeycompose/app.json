@@ -1,6 +1,6 @@
 {
-  "id": "nl.jwienk.desktop",
-  "version": "0.0.1",
+  "id": "nl.jwienk.desktop-device",
+  "version": "1.0.0",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "brandColor": "#4CAF50",
@@ -29,10 +29,10 @@
     "email": "jeroenwienk@gmail.com"
   },
   "bugs": {
-    "url": "https://github.com/jeroenwienk/nl.jwienk.desktop/issues"
+    "url": "https://github.com/jeroenwienk/nl.jwienk.desktop-device/issues"
   },
-  "source": "https://github.com/jeroenwienk/nl.jwienk.desktop",
-  "homepage": "https://github.com/jeroenwienk/homey-desktop",
+  "source": "https://github.com/jeroenwienk/nl.jwienk.desktop-device",
+  "homepage": "https://github.com/jeroenwienk/homey-desktop-device",
   "support": "mailto:jeroenwienk@gmail.com",
   "api": {
     "addSomething": {

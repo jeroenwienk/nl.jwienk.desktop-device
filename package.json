@@ -1,5 +1,5 @@
 {
-  "name": "nl.jwienk.desktop",
+  "name": "nl.jwienk.desktop-device",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
@@ -17,6 +17,6 @@
   },
   "dependencies": {
     "athom-api": "^3.2.14",
-    "socket.io-client": "^3.0.4"
+    "socket.io-client": "^3.0.5"
   }
 }
