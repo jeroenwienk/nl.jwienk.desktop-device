@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "compatibility": ">=5.0.0",
   "sdk": 3,
-  "brandColor": "#FF0000",
+  "brandColor": "#4CAF50",
   "name": {
     "en": "Desktop"
   },
@@ -306,15 +306,20 @@
   },
   "drivers": [
     {
+      "images": {
+        "large": "/drivers/desktop/assets/images/large.png",
+        "small": "/drivers/desktop/assets/images/small.png"
+      },
+      "icon": "/drivers/desktop/assets/icon.svg",
+      "capabilities": [
+        "onoff"
+      ],
+      "class": "other",
       "id": "desktop",
       "discovery": "desktop",
       "name": {
         "en": "Desktop"
       },
-      "class": "other",
-      "capabilities": [
-        "onoff"
-      ],
       "pair": [
         {
           "id": "list_devices",
@@ -330,26 +335,9 @@
           "id": "add_devices",
           "template": "add_devices"
         }
-      ],
-      "images": {
-        "small": "/drivers/desktop/assets/images/small.png",
-        "large": "/drivers/desktop/assets/images/large.png"
-      }
+      ]
     }
   ],
-  "capabilities": {
-    "test": {
-      "type": "boolean",
-      "title": {
-        "en": "My Button"
-      },
-      "getable": false,
-      "setable": true,
-      "uiComponent": "button",
-      "uiQuickAction": false,
-      "icon": "/assets/icon.svg"
-    }
-  },
   "discovery": {
     "desktop": {
       "type": "mdns-sd",

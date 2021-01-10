@@ -40,6 +40,7 @@ class DesktopDevice extends Homey.Device {
     });
 
     this.socket.on('connect', () => {
+      this.socket.sendBuffer = [];
       this.log('connect:', this.socket.id);
     });
 

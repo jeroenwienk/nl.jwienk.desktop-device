@@ -231,7 +231,7 @@ class DesktopDriver extends Homey.Driver {
         const result = await emit();
         this.log(result);
 
-        // TODO: when!
+        // todo: when!
         if (result.stderr.length > 0) {
 
         }

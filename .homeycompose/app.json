@@ -1,18 +1,22 @@
 {
   "id": "nl.jwienk.desktop",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "compatibility": ">=5.0.0",
   "sdk": 3,
-  "brandColor": "#FF0000",
+  "brandColor": "#4CAF50",
   "name": {
-    "en": "Desktop"
+    "en": "Desktop Device"
   },
   "description": {
-    "en": "Desktop"
+    "en": "Create a link between your desktop and Homey"
   },
   "category": [
     "tools"
   ],
+  "tags": {
+    "en": ["desktop"],
+    "nl": ["desktop"]
+  },
   "permissions": [
     "homey:manager:api"
   ],
@@ -24,6 +28,12 @@
     "name": "Jeroen Wienk",
     "email": "jeroenwienk@gmail.com"
   },
+  "bugs": {
+    "url": "https://github.com/jeroenwienk/nl.jwienk.desktop/issues"
+  },
+  "source": "https://github.com/jeroenwienk/nl.jwienk.desktop",
+  "homepage": "https://github.com/jeroenwienk/homey-desktop",
+  "support": "mailto:jeroenwienk@gmail.com",
   "api": {
     "addSomething": {
       "method": "post",
