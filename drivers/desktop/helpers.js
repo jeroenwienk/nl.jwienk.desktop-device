@@ -84,7 +84,7 @@ function getBrokenDisplays(displays, flows, device) {
   return filteredFlows.reduce((accumulator, flow) => {
 
     const actions = flow.actions.filter((action) => {
-      return action.args.display != null;
+      return action.args.display != null && action.uri === `homey:device:${device.apiId}`;
     });
 
     actions.forEach((action) => {

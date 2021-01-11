@@ -6,7 +6,7 @@
         "en": "A button is pressed..."
       },
       "titleFormatted": {
-        "en": "[[button]] is pressed"
+        "en": "Button [[button]] is pressed"
       },
       "args": [
         {
@@ -24,7 +24,7 @@
         "en": "A shorcut is pressed..."
       },
       "titleFormatted": {
-        "en": "[[accelerator]] is pressed"
+        "en": "Shortcut [[accelerator]] is pressed"
       },
       "args": [
         {
@@ -71,6 +71,9 @@
       "title": {
         "en": "Open url"
       },
+      "hint": {
+        "en": "Open an url in the default desktop's manner."
+      },
       "args": [
         {
           "type": "text",
@@ -85,6 +88,9 @@
       "id": "action_path_open",
       "title": {
         "en": "Open path"
+      },
+      "hint": {
+        "en": "Open a path in the default desktop's manner."
       },
       "args": [
         {
@@ -102,7 +108,7 @@
         "en": "Create a desktop notification with..."
       },
       "titleFormatted": {
-        "en": "Create a desktop notification with title: [[title]] and message: [[body]] and [[silent]]"
+        "en": "Create a desktop notification with title [[title]] and message [[body]] and [[silent]]"
       },
       "args": [
         {
@@ -145,7 +151,7 @@
         "en": "Run a command..."
       },
       "titleFormatted": {
-        "en": "Run command [[command]] with timeout: [[timeout]] and working directory: [[cwd]] and output ID: [[outputId]]"
+        "en": "Run command [[command]] with timeout [[timeout]] and working directory [[cwd]] and output ID [[outputId]]"
       },
       "hint": {
         "en": "To do something with the output you can specify an output ID. Then use a when card in a different Flow that responds to your specified output ID."
