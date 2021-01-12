@@ -9,7 +9,7 @@
     "en": "Desktop Device"
   },
   "description": {
-    "en": "Create a link between your desktop and Homey"
+    "en": "Create a connection between your desktop and Homey."
   },
   "category": [
     "tools"
@@ -46,8 +46,7 @@
     },
     "getSomething": {
       "method": "get",
-      "path": "/",
-      "public": true
+      "path": "/"
     }
   },
   "flow": {
