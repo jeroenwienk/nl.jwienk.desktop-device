@@ -63,6 +63,36 @@
           "example": "Command output"
         }
       ]
+    },
+    {
+      "id": "trigger_input",
+      "title": {
+        "en": "An input was received..."
+      },
+      "titleFormatted": {
+        "en": "Input [[input]] was received"
+      },
+      "args": [
+        {
+          "type": "autocomplete",
+          "name": "input",
+          "placeholder": {
+            "en": "Search for an input..."
+          }
+        }
+      ],
+      "tokens": [
+        {
+          "name": "content",
+          "type": "string",
+          "title": {
+            "en": "Content"
+          },
+          "example": {
+            "en": "Content"
+          }
+        }
+      ]
     }
   ],
   "actions": [

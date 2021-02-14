@@ -1,7 +1,10 @@
 function getBrokenButtons(buttons, flows, device) {
   const filteredFlows = Object.values(flows).filter((flow) => {
-    return flow.trigger && flow.trigger.id === 'trigger_button'
-      && flow.trigger.uri === `homey:device:${device.apiId}`;
+    return (
+      flow.trigger &&
+      flow.trigger.id === "trigger_button" &&
+      flow.trigger.uri === `homey:device:${device.apiId}`
+    );
   });
 
   return filteredFlows.reduce((accumulator, flow) => {
@@ -18,17 +21,16 @@ function getBrokenButtons(buttons, flows, device) {
       ) {
         accumulator.push({
           flow: flow,
-          button: button
+          button: button,
         });
         return accumulator;
-
       }
 
       // there is a flow with a unknown button
       if (button == null) {
         accumulator.push({
           flow: flow,
-          button: null
+          button: null,
         });
         return accumulator;
       }
@@ -39,8 +41,11 @@ function getBrokenButtons(buttons, flows, device) {
 
 function getBrokenAccelerators(accelerators, flows, device) {
   const filteredFlows = Object.values(flows).filter((flow) => {
-    return flow.trigger && flow.trigger.id === 'trigger_accelerator'
-      && flow.trigger.uri === `homey:device:${device.apiId}`;
+    return (
+      flow.trigger &&
+      flow.trigger.id === "trigger_accelerator" &&
+      flow.trigger.uri === `homey:device:${device.apiId}`
+    );
   });
 
   return filteredFlows.reduce((accumulator, flow) => {
@@ -52,21 +57,20 @@ function getBrokenAccelerators(accelerators, flows, device) {
       // keys doesnt match
       if (
         accelerator &&
-        (accelerator.keys !== flow.trigger.args.accelerator.name)
+        accelerator.keys !== flow.trigger.args.accelerator.name
       ) {
         accumulator.push({
           flow: flow,
-          accelerator: accelerator
+          accelerator: accelerator,
         });
         return accumulator;
-
       }
 
       // there is a flow with a unknown button
       if (accelerator == null) {
         accumulator.push({
           flow: flow,
-          accelerator: null
+          accelerator: null,
         });
         return accumulator;
       }
@@ -77,14 +81,22 @@ function getBrokenAccelerators(accelerators, flows, device) {
 
 function getBrokenDisplays(displays, flows, device) {
   const filteredFlows = Object.values(flows).filter((flow) => {
-    return flow.actions && flow.actions.some((action) => action.id === 'action_display_set'
-      && action.uri === `homey:device:${device.apiId}`);
+    return (
+      flow.actions &&
+      flow.actions.some(
+        (action) =>
+          action.id === "action_display_set" &&
+          action.uri === `homey:device:${device.apiId}`
+      )
+    );
   });
 
   return filteredFlows.reduce((accumulator, flow) => {
-
     const actions = flow.actions.filter((action) => {
-      return action.args.display != null && action.uri === `homey:device:${device.apiId}`;
+      return (
+        action.args.display != null &&
+        action.uri === `homey:device:${device.apiId}`
+      );
     });
 
     actions.forEach((action) => {
@@ -101,7 +113,7 @@ function getBrokenDisplays(displays, flows, device) {
         accumulator.push({
           flow: flow,
           display: display,
-          action: action
+          action: action,
         });
       }
 
@@ -110,17 +122,63 @@ function getBrokenDisplays(displays, flows, device) {
         accumulator.push({
           flow: flow,
           display: null,
-          action: action
+          action: action,
         });
-
       }
     });
     return accumulator;
   }, []);
 }
 
+function getBrokenInputs(inputs, flows, device) {
+  // const filteredFlows = Object.values(flows).filter((flow) => {
+  //   return flow.actions && flow.actions.some((action) => action.id === 'action_display_set'
+  //     && action.uri === `homey:device:${device.apiId}`);
+  // });
+  //
+  // return filteredFlows.reduce((accumulator, flow) => {
+  //
+  //   const actions = flow.actions.filter((action) => {
+  //     return action.args.display != null && action.uri === `homey:device:${device.apiId}`;
+  //   });
+  //
+  //   actions.forEach((action) => {
+  //     const display = inputs.find((display) => {
+  //       return action.args.display.id === display.id;
+  //     });
+  //
+  //     // either name or description doesnt match
+  //     if (
+  //       display &&
+  //       (display.name !== action.args.display.name ||
+  //         display.description !== action.args.display.description)
+  //     ) {
+  //       accumulator.push({
+  //         flow: flow,
+  //         display: display,
+  //         action: action
+  //       });
+  //     }
+  //
+  //     // there is a flow with a unknown button
+  //     if (display == null) {
+  //       accumulator.push({
+  //         flow: flow,
+  //         display: null,
+  //         action: action
+  //       });
+  //
+  //     }
+  //   });
+  //   return accumulator;
+  // }, []);
+
+  return [];
+}
+
 module.exports = {
   getBrokenButtons,
   getBrokenAccelerators,
-  getBrokenDisplays
+  getBrokenDisplays,
+  getBrokenInputs
 };

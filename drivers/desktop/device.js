@@ -1,27 +1,33 @@
-'use strict';
+"use strict";
 
-const Homey = require('homey');
-const io = require('socket.io-client');
+const Homey = require("homey");
+const io = require("socket.io-client");
 
-const { IO_ON, IO_EMIT } = require('./events');
-const { getBrokenButtons, getBrokenAccelerators, getBrokenDisplays } = require('./helpers');
+const { IO_ON, IO_EMIT } = require("./events");
+const {
+  getBrokenButtons,
+  getBrokenAccelerators,
+  getBrokenDisplays,
+  getBrokenInputs,
+} = require("./helpers");
 
 class DesktopDevice extends Homey.Device {
   static KEYS = {
-    BUTTONS: 'buttons',
-    ACCELERATORS: 'accelerators',
-    DISPLAYS: 'displays'
+    BUTTONS: "buttons",
+    ACCELERATORS: "accelerators",
+    DISPLAYS: "displays",
+    INPUTS: "inputs",
   };
 
   async onInit() {
-    this.log('device:onInit');
+    this.log("device:onInit");
     const data = this.getData();
 
     const devices = await this.homey.app.homeyAPI.devices.getDevices({
       filter: {
-        driverId: 'desktop',
-        driverUri: 'homey:app:nl.jwienk.desktop-device'
-      }
+        driverId: "desktop",
+        driverUri: "homey:app:nl.jwienk.desktop-device",
+      },
     });
 
     const device = Object.values(devices).find((device) => {
@@ -31,53 +37,53 @@ class DesktopDevice extends Homey.Device {
     this.apiId = device ? device.id : null;
 
     this.socket = io(`https://${data.address}:${data.port}`, {
-      path: '/desktop',
+      path: "/desktop",
       rejectUnauthorized: false, // selfsigned certificate
       query: {
         cloudId: this.homey.app.systemInfo.cloudId,
-        name: this.homey.app.systemName
-      }
+        name: this.homey.app.systemName,
+      },
     });
 
-    this.socket.on('connect', () => {
+    this.socket.on("connect", () => {
       this.socket.sendBuffer = [];
-      this.log('connect:', this.socket.id);
+      this.log("connect:", this.socket.id);
     });
 
-    this.socket.on('disconnect', (reason) => {
-      this.log('disconnect:', reason);
+    this.socket.on("disconnect", (reason) => {
+      this.log("disconnect:", reason);
     });
 
-    this.socket.on('error', (error) => {
-      this.error('error:', error);
+    this.socket.on("error", (error) => {
+      this.error("error:", error);
     });
 
-    this.socket.on('connect_error', (error) => {
-      this.log('connect_error:', error);
+    this.socket.on("connect_error", (error) => {
+      //this.log('connect_error:', error);
     });
 
-    this.socket.on('connect_timeout', (timeout) => {
-      this.log('connect_error:', timeout);
+    this.socket.on("connect_timeout", (timeout) => {
+      this.log("connect_error:", timeout);
     });
 
-    this.socket.on('reconnect', (attemptNumber) => {
-      this.log('reconnect:', attemptNumber);
+    this.socket.on("reconnect", (attemptNumber) => {
+      this.log("reconnect:", attemptNumber);
     });
 
-    this.socket.on('reconnect_attempt', (attemptNumber) => {
-      this.log('reconnect_attempt:', attemptNumber);
+    this.socket.on("reconnect_attempt", (attemptNumber) => {
+      this.log("reconnect_attempt:", attemptNumber);
     });
 
-    this.socket.on('reconnecting', (attemptNumber) => {
-      this.log('reconnecting:', attemptNumber);
+    this.socket.on("reconnecting", (attemptNumber) => {
+      this.log("reconnecting:", attemptNumber);
     });
 
-    this.socket.on('reconnect_error', (error) => {
-      this.log('reconnect_error:', error);
+    this.socket.on("reconnect_error", (error) => {
+      this.log("reconnect_error:", error);
     });
 
-    this.socket.on('reconnect_failed', () => {
-      this.log('reconnect_failed:');
+    this.socket.on("reconnect_failed", () => {
+      this.log("reconnect_failed:");
     });
 
     this.socket.on(IO_ON.BUTTONS_SYNC, (data, callback) => {
@@ -99,32 +105,40 @@ class DesktopDevice extends Homey.Device {
     this.socket.on(IO_ON.DISPLAYS_SYNC, (data, callback) => {
       this.handleDisplaysSync(data, callback);
     });
+
+    this.socket.on(IO_ON.INPUTS_SYNC, (data, callback) => {
+      this.handleInputsSync(data, callback);
+    });
+
+    this.socket.on(IO_ON.INPUT_RUN, (data, callback) => {
+      this.handleInputRun(data, callback);
+    });
   }
 
   ready() {
-    this.log('device:ready');
+    this.log("device:ready");
     this.setAvailable();
   }
 
   onDiscoveryResult(discoveryResult) {
-    this.log('onDiscoveryResult');
+    this.log("onDiscoveryResult");
     return discoveryResult.id === this.getData().id;
   }
 
   async onDiscoveryAvailable(discoveryResult) {
-    this.log('onDiscoveryAvailable', discoveryResult);
+    this.log("onDiscoveryAvailable", discoveryResult);
   }
 
   onDiscoveryAddressChanged(discoveryResult) {
-    this.log('onDiscoveryAddressChanged', discoveryResult);
+    this.log("onDiscoveryAddressChanged", discoveryResult);
   }
 
   onDiscoveryLastSeenChanged(discoveryResult) {
-    this.log('onLastSeenChanged', discoveryResult);
+    this.log("onLastSeenChanged", discoveryResult);
   }
 
   async handleButtonsSync(data, callback) {
-    this.log('buttons:sync');
+    this.log("buttons:sync");
     const buttons = await this.setButtons(data.buttons);
     const flows = await this.homey.app.homeyAPI.flow.getFlows();
     const broken = getBrokenButtons(buttons, flows, this);
@@ -132,17 +146,20 @@ class DesktopDevice extends Homey.Device {
   }
 
   async handleButtonRun(data) {
-    this.log('button:run', data);
+    this.log("button:run", data);
     try {
-      await this.driver.triggerDeviceButtonCard
-        .trigger(this, { token: 1 }, data);
+      await this.driver.triggerDeviceButtonCard.trigger(
+        this,
+        { token: 1 },
+        data
+      );
     } catch (error) {
       this.error(error);
     }
   }
 
   async handleAcceleratorsSync(data, callback) {
-    this.log('accelerators:sync');
+    this.log("accelerators:sync");
     const accelerators = await this.setAccelerators(data.accelerators);
     const flows = await this.homey.app.homeyAPI.flow.getFlows();
     const broken = getBrokenAccelerators(accelerators, flows, this);
@@ -150,21 +167,45 @@ class DesktopDevice extends Homey.Device {
   }
 
   async handleAcceleratorRun(data) {
-    this.log('accelerator:run', data);
+    this.log("accelerator:run", data);
     try {
-      await this.driver.triggerDeviceAcceleratorCard
-        .trigger(this, { token: 1 }, data);
+      await this.driver.triggerDeviceAcceleratorCard.trigger(
+        this,
+        { token: 1 },
+        data
+      );
     } catch (error) {
       this.error(error);
     }
   }
 
   async handleDisplaysSync(data, callback) {
-    this.log('displays:sync');
+    this.log("displays:sync");
     const displays = await this.setDisplays(data.displays);
     const flows = await this.homey.app.homeyAPI.flow.getFlows();
     const broken = getBrokenDisplays(displays, flows, this);
     callback({ broken });
+  }
+
+  async handleInputsSync(data, callback) {
+    this.log("inputs:sync");
+    const inputs = await this.setInputs(data.inputs);
+    const flows = await this.homey.app.homeyAPI.flow.getFlows();
+    const broken = getBrokenInputs(inputs, flows, this);
+    callback({ broken });
+  }
+
+  async handleInputRun(data) {
+    this.log("input:run", data);
+    try {
+      await this.driver.triggerDeviceInputCard.trigger(
+        this,
+        { content: data.content },
+        data
+      );
+    } catch (error) {
+      this.error(error);
+    }
   }
 
   getButtons() {
@@ -195,6 +236,16 @@ class DesktopDevice extends Homey.Device {
   async setDisplays(displays) {
     await this.setStoreValue(DesktopDevice.KEYS.DISPLAYS, displays);
     return this.getDisplays();
+  }
+
+  getInputs() {
+    const inputs = this.getStoreValue(DesktopDevice.KEYS.INPUTS);
+    return inputs ? inputs : [];
+  }
+
+  async setInputs(inputs) {
+    await this.setStoreValue(DesktopDevice.KEYS.INPUTS, inputs);
+    return this.getInputs();
   }
 }
 

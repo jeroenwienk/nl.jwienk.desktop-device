@@ -12,13 +12,23 @@ class DesktopDriver extends Homey.Driver {
       this.log('driver:ready');
     });
 
-    this.triggerDeviceButtonCard = this.homey.flow.getDeviceTriggerCard('trigger_button');
-    this.triggerDeviceAcceleratorCard = this.homey.flow.getDeviceTriggerCard('trigger_accelerator');
-    this.triggerDeviceCommandCard = this.homey.flow.getDeviceTriggerCard('trigger_command');
+    this.triggerDeviceButtonCard = this.homey.flow.getDeviceTriggerCard(
+      'trigger_button'
+    );
+    this.triggerDeviceAcceleratorCard = this.homey.flow.getDeviceTriggerCard(
+      'trigger_accelerator'
+    );
+    this.triggerDeviceCommandCard = this.homey.flow.getDeviceTriggerCard(
+      'trigger_command'
+    );
+    this.triggerDeviceInputCard = this.homey.flow.getDeviceTriggerCard(
+      'trigger_input'
+    );
 
     this.registerTriggerButton();
     this.registerTriggerAccelerator();
     this.registerTriggerCommand();
+    this.registerTriggerInput();
     this.registerActionBrowserOpen();
     this.registerActionPathOpen();
     this.registerActionNotificationShow();
@@ -44,7 +54,7 @@ class DesktopDriver extends Homey.Driver {
           host: discoveryResult.host,
           port: discoveryResult.port,
           name: discoveryResult.name,
-          fullname: discoveryResult.fullname
+          fullname: discoveryResult.fullname,
         },
         store: {
           id: discoveryResult.txt.id,
@@ -52,8 +62,8 @@ class DesktopDriver extends Homey.Driver {
           address: discoveryResult.address,
           port: discoveryResult.txt.port,
           platform: discoveryResult.txt.platform,
-          hostname: discoveryResult.txt.hostname
-        }
+          hostname: discoveryResult.txt.hostname,
+        },
       };
     });
   }
@@ -81,13 +91,17 @@ class DesktopDriver extends Homey.Driver {
         const { device } = args;
         const buttons = device.getButtons();
 
-        return buttons.map((button) => {
-          return {
-            id: button.id,
-            name: button.name,
-            description: button.description
-          };
-        });
+        return buttons
+          .map((button) => {
+            return {
+              id: button.id,
+              name: button.name,
+              description: button.description,
+            };
+          })
+          .filter((button) => {
+            return this.matchesNameOrDescription(button, query);
+          });
       }
     );
 
@@ -99,21 +113,23 @@ class DesktopDriver extends Homey.Driver {
   }
 
   registerTriggerAccelerator() {
-    this.triggerDeviceAcceleratorCard.registerRunListener(async (args, state) => {
-      const { device, accelerator } = args;
+    this.triggerDeviceAcceleratorCard.registerRunListener(
+      async (args, state) => {
+        const { device, accelerator } = args;
 
-      if (state.id === accelerator.id) {
-        try {
-          device.socket.emit(IO_EMIT.ACCELERATOR_RUN_SUCCESS, accelerator);
-        } catch (error) {
-          this.error(error);
+        if (state.id === accelerator.id) {
+          try {
+            device.socket.emit(IO_EMIT.ACCELERATOR_RUN_SUCCESS, accelerator);
+          } catch (error) {
+            this.error(error);
+          }
+
+          return true;
         }
 
-        return true;
+        return false;
       }
-
-      return false;
-    });
+    );
 
     this.triggerDeviceAcceleratorCard.registerArgumentAutocompleteListener(
       'accelerator',
@@ -121,13 +137,17 @@ class DesktopDriver extends Homey.Driver {
         const { device } = args;
         const accelerators = device.getAccelerators();
 
-        return accelerators.map((accelerator) => {
-          return {
-            id: accelerator.id,
-            name: accelerator.keys,
-            description: accelerator.keys
-          };
-        });
+        return accelerators
+          .map((accelerator) => {
+            return {
+              id: accelerator.id,
+              name: accelerator.keys,
+              description: accelerator.keys,
+            };
+          })
+          .filter((accelerator) => {
+            return this.matchesNameOrDescription(accelerator, query);
+          });
       }
     );
 
@@ -149,8 +169,50 @@ class DesktopDriver extends Homey.Driver {
       return false;
     });
 
-    this.triggerDeviceCommandCard.on('update', () => {
+    this.triggerDeviceCommandCard.on('update', () => {});
+  }
 
+  registerTriggerInput() {
+    this.triggerDeviceInputCard.registerRunListener(async (args, state) => {
+      const { device, input } = args;
+
+      if (state.id === input.id) {
+        try {
+          device.socket.emit(IO_EMIT.INPUT_RUN_SUCCESS, input);
+        } catch (error) {
+          this.error(error);
+        }
+
+        return true;
+      }
+
+      return false;
+    });
+
+    this.triggerDeviceInputCard.registerArgumentAutocompleteListener(
+      'input',
+      async (query, args) => {
+        const { device } = args;
+        const inputs = device.getInputs();
+
+        return inputs
+          .map((input) => {
+            return {
+              id: input.id,
+              name: input.name,
+              description: input.description,
+            };
+          })
+          .filter((input) => {
+            return this.matchesNameOrDescription(input, query);
+          });
+      }
+    );
+
+    this.triggerDeviceInputCard.on('update', () => {
+      this.getDevices().forEach((device) => {
+        device.socket.emit(IO_EMIT.FLOW_INPUT_SAVED);
+      });
     });
   }
 
@@ -168,9 +230,7 @@ class DesktopDriver extends Homey.Driver {
       return true;
     });
 
-    action.on('update', () => {
-
-    });
+    action.on('update', () => {});
   }
 
   registerActionPathOpen() {
@@ -187,9 +247,7 @@ class DesktopDriver extends Homey.Driver {
       return true;
     });
 
-    action.on('update', () => {
-
-    });
+    action.on('update', () => {});
   }
 
   registerActionNotificationShow() {
@@ -198,17 +256,19 @@ class DesktopDriver extends Homey.Driver {
     action.registerRunListener(async (args, state) => {
       const { device, title, body, silent } = args;
 
-      device.socket.emit(IO_EMIT.NOTIFICATION_SHOW_RUN, { title, body, silent }, (error) => {
-        if (error) {
-          this.error(error);
+      device.socket.emit(
+        IO_EMIT.NOTIFICATION_SHOW_RUN,
+        { title, body, silent },
+        (error) => {
+          if (error) {
+            this.error(error);
+          }
         }
-      });
+      );
       return true;
     });
 
-    action.on('update', () => {
-
-    });
+    action.on('update', () => {});
   }
 
   registerActionCommand() {
@@ -217,15 +277,20 @@ class DesktopDriver extends Homey.Driver {
     action.registerRunListener(async (args, state) => {
       const { device, command, cwd, timeout, outputId } = args;
 
-      const emit = () => new Promise((resolve, reject) => {
-        device.socket.emit(IO_EMIT.COMMAND_RUN, { command, cwd, timeout }, (error, result) => {
-          if (error) {
-            reject(error);
-          }
+      const emit = () =>
+        new Promise((resolve, reject) => {
+          device.socket.emit(
+            IO_EMIT.COMMAND_RUN,
+            { command, cwd, timeout },
+            (error, result) => {
+              if (error) {
+                reject(error);
+              }
 
-          resolve(result);
+              resolve(result);
+            }
+          );
         });
-      });
 
       try {
         const result = await emit();
@@ -233,31 +298,37 @@ class DesktopDriver extends Homey.Driver {
 
         // todo: when!
         if (result.stderr.length > 0) {
-
         }
 
-        this.triggerDeviceCommandCard
-          .trigger(device, { output: result.stdout }, { outputId });
+        this.triggerDeviceCommandCard.trigger(
+          device,
+          { output: result.stdout },
+          { outputId }
+        );
 
         return true;
       } catch (error) {
         this.error(error);
 
         if (error.stderr != null) {
-          this.triggerDeviceCommandCard
-            .trigger(device, { output: error.stderr }, { outputId });
+          this.triggerDeviceCommandCard.trigger(
+            device,
+            { output: error.stderr },
+            { outputId }
+          );
           return true;
         }
 
-        this.triggerDeviceCommandCard
-          .trigger(device, { output: JSON.stringify(error) }, { outputId });
+        this.triggerDeviceCommandCard.trigger(
+          device,
+          { output: JSON.stringify(error) },
+          { outputId }
+        );
         return false;
       }
     });
 
-    action.on('update', () => {
-
-    });
+    action.on('update', () => {});
   }
 
   registerActionDisplaySet() {
@@ -266,11 +337,15 @@ class DesktopDriver extends Homey.Driver {
     action.registerRunListener(async (args, state) => {
       const { device, display, text } = args;
 
-      device.socket.emit(IO_EMIT.DISPLAY_SET_RUN, { display, text }, (error) => {
-        if (error) {
-          this.error(error);
+      device.socket.emit(
+        IO_EMIT.DISPLAY_SET_RUN,
+        { display, text },
+        (error) => {
+          if (error) {
+            this.error(error);
+          }
         }
-      });
+      );
       return true;
     });
 
@@ -280,13 +355,17 @@ class DesktopDriver extends Homey.Driver {
         const { device } = args;
         const displays = device.getDisplays();
 
-        return displays.map((display) => {
-          return {
-            id: display.id,
-            name: display.name,
-            description: display.description
-          };
-        });
+        return displays
+          .map((display) => {
+            return {
+              id: display.id,
+              name: display.name,
+              description: display.description,
+            };
+          })
+          .filter((display) => {
+            return this.matchesNameOrDescription(display, query);
+          });
       }
     );
 
@@ -295,6 +374,13 @@ class DesktopDriver extends Homey.Driver {
         device.socket.emit(IO_EMIT.FLOW_DISPLAY_SAVED);
       });
     });
+  }
+
+  matchesNameOrDescription(value, query) {
+    return (
+      value.name.toLowerCase().includes(query.toLowerCase()) ||
+      value.description.toLowerCase().includes(query.toLowerCase())
+    );
   }
 }
 

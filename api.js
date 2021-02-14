@@ -6,5 +6,5 @@ module.exports = {
   async getSomething({ homey, body }) {
     // access the post body and perform some action on it.
     return 'getSomething';
-  }
+  },
 };
