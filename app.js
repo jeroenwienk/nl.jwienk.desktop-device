@@ -4,7 +4,7 @@ const Homey = require('homey');
 const { HomeyAPI } = require('athom-api');
 
 if (process.env.DEBUG === '1') {
-  require('inspector').open(9229, '0.0.0.0', true);
+  require('inspector').open(9229, '0.0.0.0', false);
 }
 
 class App extends Homey.App {

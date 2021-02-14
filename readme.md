@@ -4,6 +4,7 @@ Create a connection between your desktop and Homey.
 
 This repository holds the Homey app that connects with an Electron desktop app to provide the following features for Homey to use: 
 
+- input events
 - button events
 - shortcuts events
 - set a display value
