@@ -1,6 +1,6 @@
 {
   "id": "nl.jwienk.desktop-device",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "brandColor": "#4CAF50",
@@ -14,8 +14,12 @@
     "tools"
   ],
   "tags": {
-    "en": ["desktop"],
-    "nl": ["desktop"]
+    "en": [
+      "desktop"
+    ],
+    "nl": [
+      "desktop"
+    ]
   },
   "permissions": [
     "homey:manager:api"
