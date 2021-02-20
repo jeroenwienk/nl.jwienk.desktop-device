@@ -2,7 +2,7 @@
 
 const Homey = require('homey');
 
-const { IO_ON, IO_EMIT } = require('./events');
+const { IO_EMIT } = require('./events');
 
 class DesktopDriver extends Homey.Driver {
   async onInit() {
@@ -21,14 +21,18 @@ class DesktopDriver extends Homey.Driver {
     this.triggerDeviceCommandCard = this.homey.flow.getDeviceTriggerCard(
       'trigger_command'
     );
-    this.triggerDeviceInputCard = this.homey.flow.getDeviceTriggerCard(
-      'trigger_input'
+    this.triggerDeviceInputTextCard = this.homey.flow.getDeviceTriggerCard(
+      'trigger_input_text'
+    );
+    this.triggerDeviceInputNumberCard = this.homey.flow.getDeviceTriggerCard(
+      'trigger_input_number'
     );
 
     this.registerTriggerButton();
     this.registerTriggerAccelerator();
     this.registerTriggerCommand();
-    this.registerTriggerInput();
+    this.registerTriggerInputText();
+    this.registerTriggerInputNumber();
     this.registerActionBrowserOpen();
     this.registerActionPathOpen();
     this.registerActionNotificationShow();
@@ -172,8 +176,8 @@ class DesktopDriver extends Homey.Driver {
     this.triggerDeviceCommandCard.on('update', () => {});
   }
 
-  registerTriggerInput() {
-    this.triggerDeviceInputCard.registerRunListener(async (args, state) => {
+  registerTriggerInputText() {
+    this.triggerDeviceInputTextCard.registerRunListener(async (args, state) => {
       const { device, input } = args;
 
       if (state.id === input.id) {
@@ -189,7 +193,7 @@ class DesktopDriver extends Homey.Driver {
       return false;
     });
 
-    this.triggerDeviceInputCard.registerArgumentAutocompleteListener(
+    this.triggerDeviceInputTextCard.registerArgumentAutocompleteListener(
       'input',
       async (query, args) => {
         const { device } = args;
@@ -199,17 +203,71 @@ class DesktopDriver extends Homey.Driver {
           .map((input) => {
             return {
               id: input.id,
+              type: input.type,
               name: input.name,
               description: input.description,
             };
           })
           .filter((input) => {
-            return this.matchesNameOrDescription(input, query);
+            return (
+              input.type === 'text' &&
+              this.matchesNameOrDescription(input, query)
+            );
           });
       }
     );
 
-    this.triggerDeviceInputCard.on('update', () => {
+    this.triggerDeviceInputTextCard.on('update', () => {
+      this.getDevices().forEach((device) => {
+        device.socket.emit(IO_EMIT.FLOW_INPUT_SAVED);
+      });
+    });
+  }
+
+  registerTriggerInputNumber() {
+    this.triggerDeviceInputNumberCard.registerRunListener(
+      async (args, state) => {
+        const { device, input } = args;
+
+        if (state.id === input.id) {
+          try {
+            device.socket.emit(IO_EMIT.INPUT_RUN_SUCCESS, input);
+          } catch (error) {
+            this.error(error);
+          }
+
+          return true;
+        }
+
+        return false;
+      }
+    );
+
+    this.triggerDeviceInputNumberCard.registerArgumentAutocompleteListener(
+      'input',
+      async (query, args) => {
+        const { device } = args;
+        const inputs = device.getInputs();
+
+        return inputs
+          .map((input) => {
+            return {
+              id: input.id,
+              type: input.type,
+              name: input.name,
+              description: input.description,
+            };
+          })
+          .filter((input) => {
+            return (
+              input.type === 'number' &&
+              this.matchesNameOrDescription(input, query)
+            );
+          });
+      }
+    );
+
+    this.triggerDeviceInputNumberCard.on('update', () => {
       this.getDevices().forEach((device) => {
         device.socket.emit(IO_EMIT.FLOW_INPUT_SAVED);
       });

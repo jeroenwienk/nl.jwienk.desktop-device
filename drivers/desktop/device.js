@@ -197,8 +197,22 @@ class DesktopDevice extends Homey.Device {
 
   async handleInputRun(data) {
     this.log("input:run", data);
+
+    let card = null;
+
+    switch (data.type) {
+      case 'text':
+        card = this.driver.triggerDeviceInputTextCard
+        break;
+      case 'number':
+        card = this.driver.triggerDeviceInputNumberCard
+        break;
+      default:
+        throw new Error(`Invalid input type: ${data.type}`)
+    }
+
     try {
-      await this.driver.triggerDeviceInputCard.trigger(
+      await card.trigger(
         this,
         { content: data.content },
         data

@@ -131,12 +131,12 @@
         ]
       },
       {
-        "id": "trigger_input",
+        "id": "trigger_input_text",
         "title": {
-          "en": "An input was received..."
+          "en": "A text input was send..."
         },
         "titleFormatted": {
-          "en": "Input [[input]] was received"
+          "en": "Text input [[input]] was send"
         },
         "args": [
           {
@@ -162,6 +162,39 @@
             "example": {
               "en": "Content"
             }
+          }
+        ]
+      },
+      {
+        "id": "trigger_input_number",
+        "title": {
+          "en": "A number input was send..."
+        },
+        "titleFormatted": {
+          "en": "Number input [[input]] was send"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=desktop"
+          },
+          {
+            "type": "autocomplete",
+            "name": "input",
+            "placeholder": {
+              "en": "Search for an input..."
+            }
+          }
+        ],
+        "tokens": [
+          {
+            "name": "content",
+            "type": "number",
+            "title": {
+              "en": "Content"
+            },
+            "example": 1
           }
         ]
       }
