@@ -1,12 +1,11 @@
-This app requires the desktop app to work.
+This app requires a desktop app to work. Visit the developer website below to download.
 
-https://github.com/jeroenwienk/homey-desktop-device/releases/latest
-
+Here you will find releases for multiple operating systems:
 - macOS requires Desktop.Device.dmg
 - Windows requires Desktop.Device-x.x.x.Setup.exe
 - Linux requires .deb or .rpm
 
-Features
+Features:
 - input events
 - button events
 - shortcuts events
