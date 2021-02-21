@@ -146,7 +146,7 @@ class DesktopDriver extends Homey.Driver {
             return {
               id: accelerator.id,
               name: accelerator.keys,
-              description: accelerator.keys,
+              description: accelerator.description,
             };
           })
           .filter((accelerator) => {

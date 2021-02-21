@@ -36,7 +36,7 @@
     "url": "https://github.com/jeroenwienk/nl.jwienk.desktop-device/issues"
   },
   "source": "https://github.com/jeroenwienk/nl.jwienk.desktop-device",
-  "homepage": "https://github.com/jeroenwienk/homey-desktop-device",
+  "homepage": "https://github.com/jeroenwienk/homey-desktop-device/releases/latest",
   "support": "mailto:jeroenwienk@gmail.com",
   "api": {
     "addSomething": {

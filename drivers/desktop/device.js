@@ -22,6 +22,7 @@ class DesktopDevice extends Homey.Device {
   async onInit() {
     this.log("device:onInit");
     const data = this.getData();
+    const store = this.getStore();
 
     const devices = await this.homey.app.homeyAPI.devices.getDevices({
       filter: {
@@ -36,7 +37,7 @@ class DesktopDevice extends Homey.Device {
 
     this.apiId = device ? device.id : null;
 
-    this.socket = io(`https://${data.address}:${data.port}`, {
+    this.socket = io(`https://${store.address}:${store.port}`, {
       path: "/desktop",
       rejectUnauthorized: false, // selfsigned certificate
       query: {
@@ -125,12 +126,14 @@ class DesktopDevice extends Homey.Device {
     return discoveryResult.id === this.getData().id;
   }
 
-  async onDiscoveryAvailable(discoveryResult) {
+  onDiscoveryAvailable(discoveryResult) {
     this.log("onDiscoveryAvailable", discoveryResult);
+    // todo set in store
   }
 
   onDiscoveryAddressChanged(discoveryResult) {
     this.log("onDiscoveryAddressChanged", discoveryResult);
+    // todo set in store
   }
 
   onDiscoveryLastSeenChanged(discoveryResult) {
