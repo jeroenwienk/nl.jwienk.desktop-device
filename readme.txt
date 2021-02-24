@@ -5,6 +5,11 @@ Here you will find releases for multiple operating systems:
 - Windows requires Desktop.Device-x.x.x.Setup.exe
 - Linux requires .deb or .rpm
 
+When prompted for network permissions make sure you accept the public network permissions else the app wont work.
+There is no external connection outside of your network but the public permission is required for discovery.
+
+Visit the community topic below for more detailed information.
+
 Features:
 - input events
 - button events

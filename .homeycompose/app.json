@@ -38,6 +38,7 @@
   "source": "https://github.com/jeroenwienk/nl.jwienk.desktop-device",
   "homepage": "https://github.com/jeroenwienk/homey-desktop-device/releases/latest",
   "support": "mailto:jeroenwienk@gmail.com",
+  "homeyCommunityTopicId": 43553,
   "api": {
     "addSomething": {
       "method": "post",
