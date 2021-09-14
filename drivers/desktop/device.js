@@ -20,6 +20,8 @@ class DesktopDevice extends Homey.Device {
   };
 
   async onInit() {
+    // await this.setUnavailable();
+
     this.log("device:onInit");
     const data = this.getData();
     const store = this.getStore();
@@ -116,9 +118,8 @@ class DesktopDevice extends Homey.Device {
     });
   }
 
-  ready() {
+  async ready() {
     this.log("device:ready");
-    this.setAvailable();
   }
 
   onDiscoveryResult(discoveryResult) {
@@ -128,7 +129,7 @@ class DesktopDevice extends Homey.Device {
 
   onDiscoveryAvailable(discoveryResult) {
     this.log("onDiscoveryAvailable", discoveryResult);
-    // todo set in store
+    this.setStoreValue('address', discoveryResult.address);
   }
 
   onDiscoveryAddressChanged(discoveryResult) {
