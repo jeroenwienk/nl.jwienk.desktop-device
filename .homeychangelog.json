@@ -10,5 +10,8 @@
   },
   "1.0.5": {
     "en": "update readme, add community topic id"
+  },
+  "1.0.6": {
+    "en": "added option to add buttons to tray menu"
   }
 }
