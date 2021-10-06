@@ -13,5 +13,8 @@
   },
   "1.0.6": {
     "en": "added option to add buttons to tray menu"
+  },
+  "1.0.7": {
+    "en": "dont buffer flow actions on not connected"
   }
 }
