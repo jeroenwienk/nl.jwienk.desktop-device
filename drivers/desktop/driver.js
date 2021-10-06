@@ -12,18 +12,15 @@ class DesktopDriver extends Homey.Driver {
       this.log('driver:ready');
     });
 
-    this.triggerDeviceButtonCard = this.homey.flow.getDeviceTriggerCard(
-      'trigger_button'
-    );
+    this.triggerDeviceButtonCard =
+      this.homey.flow.getDeviceTriggerCard('trigger_button');
     this.triggerDeviceAcceleratorCard = this.homey.flow.getDeviceTriggerCard(
       'trigger_accelerator'
     );
-    this.triggerDeviceCommandCard = this.homey.flow.getDeviceTriggerCard(
-      'trigger_command'
-    );
-    this.triggerDeviceInputTextCard = this.homey.flow.getDeviceTriggerCard(
-      'trigger_input_text'
-    );
+    this.triggerDeviceCommandCard =
+      this.homey.flow.getDeviceTriggerCard('trigger_command');
+    this.triggerDeviceInputTextCard =
+      this.homey.flow.getDeviceTriggerCard('trigger_input_text');
     this.triggerDeviceInputNumberCard = this.homey.flow.getDeviceTriggerCard(
       'trigger_input_number'
     );
@@ -72,13 +69,50 @@ class DesktopDriver extends Homey.Driver {
     });
   }
 
+  // onPair(session) {
+  //   session.setHandler('list_devices', this.onPairListDevices.bind(this));
+  // }
+
+  // onRepair(session, device) {
+  //   session.setHandler('list_devices', async (data) => {
+  //     const discoveryStrategy = this.homey.discovery.getStrategy('desktop');
+  //     const discoveryResults = Object.values(
+  //       discoveryStrategy.getDiscoveryResults()
+  //     );
+  //
+  //     return discoveryResults.map((discoveryResult) => {
+  //       this.log(discoveryResult);
+  //       return {
+  //         name: discoveryResult.txt.hostname,
+  //         data: {
+  //           id: discoveryResult.id,
+  //           mac: discoveryResult.txt.mac,
+  //           address: discoveryResult.address,
+  //           host: discoveryResult.host,
+  //           port: discoveryResult.port,
+  //           name: discoveryResult.name,
+  //           fullname: discoveryResult.fullname,
+  //         },
+  //         store: {
+  //           id: discoveryResult.txt.id,
+  //           mac: discoveryResult.txt.mac,
+  //           address: discoveryResult.address,
+  //           port: discoveryResult.txt.port,
+  //           platform: discoveryResult.txt.platform,
+  //           hostname: discoveryResult.txt.hostname,
+  //         },
+  //       };
+  //     });
+  //   });
+  // }
+
   registerTriggerButton() {
     this.triggerDeviceButtonCard.registerRunListener(async (args, state) => {
       const { device, button } = args;
 
       if (state.id === button.id) {
         try {
-          device.socket.emit(IO_EMIT.BUTTON_RUN_SUCCESS, button);
+          device.socket.volatile.emit(IO_EMIT.BUTTON_RUN_SUCCESS, button);
         } catch (error) {
           this.error(error);
         }
@@ -111,7 +145,7 @@ class DesktopDriver extends Homey.Driver {
 
     this.triggerDeviceButtonCard.on('update', () => {
       this.getDevices().forEach((device) => {
-        device.socket.emit(IO_EMIT.FLOW_BUTTON_SAVED);
+        device.socket.volatile.emit(IO_EMIT.FLOW_BUTTON_SAVED);
       });
     });
   }
@@ -123,7 +157,10 @@ class DesktopDriver extends Homey.Driver {
 
         if (state.id === accelerator.id) {
           try {
-            device.socket.emit(IO_EMIT.ACCELERATOR_RUN_SUCCESS, accelerator);
+            device.socket.volatile.emit(
+              IO_EMIT.ACCELERATOR_RUN_SUCCESS,
+              accelerator
+            );
           } catch (error) {
             this.error(error);
           }
@@ -157,7 +194,7 @@ class DesktopDriver extends Homey.Driver {
 
     this.triggerDeviceAcceleratorCard.on('update', () => {
       this.getDevices().forEach((device) => {
-        device.socket.emit(IO_EMIT.FLOW_ACCELERATOR_SAVED);
+        device.socket.volatile.emit(IO_EMIT.FLOW_ACCELERATOR_SAVED);
       });
     });
   }
@@ -182,7 +219,7 @@ class DesktopDriver extends Homey.Driver {
 
       if (state.id === input.id) {
         try {
-          device.socket.emit(IO_EMIT.INPUT_RUN_SUCCESS, input);
+          device.socket.volatile.emit(IO_EMIT.INPUT_RUN_SUCCESS, input);
         } catch (error) {
           this.error(error);
         }
@@ -219,7 +256,7 @@ class DesktopDriver extends Homey.Driver {
 
     this.triggerDeviceInputTextCard.on('update', () => {
       this.getDevices().forEach((device) => {
-        device.socket.emit(IO_EMIT.FLOW_INPUT_SAVED);
+        device.socket.volatile.emit(IO_EMIT.FLOW_INPUT_SAVED);
       });
     });
   }
@@ -231,7 +268,7 @@ class DesktopDriver extends Homey.Driver {
 
         if (state.id === input.id) {
           try {
-            device.socket.emit(IO_EMIT.INPUT_RUN_SUCCESS, input);
+            device.socket.volatile.emit(IO_EMIT.INPUT_RUN_SUCCESS, input);
           } catch (error) {
             this.error(error);
           }
@@ -269,7 +306,7 @@ class DesktopDriver extends Homey.Driver {
 
     this.triggerDeviceInputNumberCard.on('update', () => {
       this.getDevices().forEach((device) => {
-        device.socket.emit(IO_EMIT.FLOW_INPUT_SAVED);
+        device.socket.volatile.emit(IO_EMIT.FLOW_INPUT_SAVED);
       });
     });
   }
@@ -280,11 +317,15 @@ class DesktopDriver extends Homey.Driver {
     action.registerRunListener(async (args, state) => {
       const { device, url } = args;
 
-      device.socket.emit(IO_EMIT.BROWSER_OPEN_RUN, { url }, (error) => {
-        if (error) {
-          this.error(error);
+      device.socket.volatile.emit(
+        IO_EMIT.BROWSER_OPEN_RUN,
+        { url },
+        (error) => {
+          if (error) {
+            this.error(error);
+          }
         }
-      });
+      );
       return true;
     });
 
@@ -297,7 +338,7 @@ class DesktopDriver extends Homey.Driver {
     action.registerRunListener(async (args, state) => {
       const { device, path } = args;
 
-      device.socket.emit(IO_EMIT.PATH_OPEN_RUN, { path }, (error) => {
+      device.socket.volatile.emit(IO_EMIT.PATH_OPEN_RUN, { path }, (error) => {
         if (error) {
           this.error(error);
         }
@@ -314,7 +355,7 @@ class DesktopDriver extends Homey.Driver {
     action.registerRunListener(async (args, state) => {
       const { device, title, body, silent } = args;
 
-      device.socket.emit(
+      device.socket.volatile.emit(
         IO_EMIT.NOTIFICATION_SHOW_RUN,
         { title, body, silent },
         (error) => {
@@ -337,7 +378,7 @@ class DesktopDriver extends Homey.Driver {
 
       const emit = () =>
         new Promise((resolve, reject) => {
-          device.socket.emit(
+          device.socket.volatile.emit(
             IO_EMIT.COMMAND_RUN,
             { command, cwd, timeout },
             (error, result) => {
@@ -395,7 +436,7 @@ class DesktopDriver extends Homey.Driver {
     action.registerRunListener(async (args, state) => {
       const { device, display, text } = args;
 
-      device.socket.emit(
+      device.socket.volatile.emit(
         IO_EMIT.DISPLAY_SET_RUN,
         { display, text },
         (error) => {
@@ -429,7 +470,7 @@ class DesktopDriver extends Homey.Driver {
 
     action.on('update', () => {
       this.getDevices().forEach((device) => {
-        device.socket.emit(IO_EMIT.FLOW_DISPLAY_SAVED);
+        device.socket.volatile.emit(IO_EMIT.FLOW_DISPLAY_SAVED);
       });
     });
   }

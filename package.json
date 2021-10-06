@@ -5,14 +5,15 @@
   "scripts": {
     "start": "nodemon --watch . --exec \"homey app run\""
   },
-  "devDependencies": {
-    "nodemon": "^2.0.12",
-    "prettier": "^2.4.0"
-  },
   "nodemonConfig": {
     "ignore": [
       "app.json"
     ]
+  },
+  "devDependencies": {
+    "@types/homey": "npm:homey-apps-sdk-v3-types@^0.2.2",
+    "nodemon": "^2.0.13",
+    "prettier": "^2.4.1"
   },
   "dependencies": {
     "athom-api": "^3.6.7",

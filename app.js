@@ -3,6 +3,7 @@
 const Homey = require('homey');
 const { HomeyAPI } = require('athom-api');
 
+console.log(process.env.DEBUG);
 if (process.env.DEBUG === '1') {
   require('inspector').open(9229, '0.0.0.0', false);
 }
