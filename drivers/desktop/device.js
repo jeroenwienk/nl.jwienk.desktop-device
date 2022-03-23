@@ -23,21 +23,21 @@ class DesktopDevice extends Homey.Device {
     // await this.setUnavailable();
 
     this.log('device:onInit');
-    const data = this.getData();
+    // const data = this.getData();
     const store = this.getStore();
 
-    const devices = await this.homey.app.homeyAPI.devices.getDevices({
-      filter: {
-        driverId: 'desktop',
-        driverUri: 'homey:app:nl.jwienk.desktop-device',
-      },
-    });
+    // const devices = await this.homey.app.homeyAPI.devices.getDevices({
+    //   filter: {
+    //     driverId: 'desktop',
+    //     driverUri: 'homey:app:nl.jwienk.desktop-device',
+    //   },
+    // });
 
-    const device = Object.values(devices).find((device) => {
-      return device.data.id === data.id;
-    });
+    // const device = Object.values(devices).find((device) => {
+    //   return device.data.id === data.id;
+    // });
 
-    this.apiId = device ? device.id : null;
+    this.apiId = this.getAppId();
 
     this.socket = io(`https://${store.address}:${store.port}`, {
       path: '/desktop',

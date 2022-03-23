@@ -128,6 +128,9 @@
       "title": {
         "en": "Open url"
       },
+      "titleFormatted": {
+        "en": "Open url [[url]]"
+      },
       "hint": {
         "en": "Open an url in the default desktop's manner."
       },
@@ -145,6 +148,9 @@
       "id": "action_path_open",
       "title": {
         "en": "Open path"
+      },
+      "titleFormatted": {
+        "en": "Open path [[path]]"
       },
       "hint": {
         "en": "Open a path in the default desktop's manner."
