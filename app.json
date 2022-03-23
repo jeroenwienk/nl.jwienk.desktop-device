@@ -395,6 +395,29 @@
             }
           }
         ]
+      },
+      {
+        "id": "action_window_open",
+        "title": {
+          "en": "Open an app window..."
+        },
+        "titleFormatted": {
+          "en": "Open app window [[window]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=desktop"
+          },
+          {
+            "type": "autocomplete",
+            "name": "window",
+            "placeholder": {
+              "en": "Search for a window..."
+            }
+          }
+        ]
       }
     ]
   },

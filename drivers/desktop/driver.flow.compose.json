@@ -93,7 +93,8 @@
           }
         }
       ]
-    },{
+    },
+    {
       "id": "trigger_input_number",
       "title": {
         "en": "A number input was send..."
@@ -289,6 +290,24 @@
           },
           "placeholder": {
             "en": "Display value"
+          }
+        }
+      ]
+    },
+    {
+      "id": "action_window_open",
+      "title": {
+        "en": "Open an app window..."
+      },
+      "titleFormatted": {
+        "en": "Open app window [[window]]"
+      },
+      "args": [
+        {
+          "type": "autocomplete",
+          "name": "window",
+          "placeholder": {
+            "en": "Search for a window..."
           }
         }
       ]

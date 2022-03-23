@@ -35,6 +35,7 @@ class DesktopDriver extends Homey.Driver {
     this.registerActionNotificationShow();
     this.registerActionCommand();
     this.registerActionDisplaySet();
+    this.registerActionWindowOpen();
   }
 
   async onPairListDevices() {
@@ -473,6 +474,47 @@ class DesktopDriver extends Homey.Driver {
         device.socket.volatile.emit(IO_EMIT.FLOW_DISPLAY_SAVED);
       });
     });
+  }
+
+  registerActionWindowOpen() {
+    const action = this.homey.flow.getActionCard('action_window_open');
+
+    action.registerRunListener(async (args, state) => {
+      const { device, window } = args;
+
+      device.socket.volatile.emit(
+        IO_EMIT.WINDOW_OPEN_RUN,
+        { window },
+        (error) => {
+          if (error) {
+            this.error(error);
+          }
+        }
+      );
+      return true;
+    });
+
+    action.registerArgumentAutocompleteListener(
+      'window',
+      async (query, args) => {
+        // const { device } = args;
+        // const windows = device.getWindows();
+
+        return ['main', 'overlay', 'webapp']
+          .map((display) => {
+            return {
+              id: display,
+              name: display,
+              description: display,
+            };
+          })
+          .filter((display) => {
+            return this.matchesNameOrDescription(display, query);
+          });
+      }
+    );
+
+    action.on('update', () => {});
   }
 
   matchesNameOrDescription(value, query) {
