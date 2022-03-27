@@ -4,12 +4,6 @@ const Homey = require('homey');
 const io = require('socket.io-client');
 
 const { IO_ON, IO_EMIT } = require('./events');
-const {
-  getBrokenButtons,
-  getBrokenAccelerators,
-  getBrokenDisplays,
-  getBrokenInputs,
-} = require('./helpers');
 
 class DesktopDevice extends Homey.Device {
   static KEYS = {
@@ -20,23 +14,8 @@ class DesktopDevice extends Homey.Device {
   };
 
   async onInit() {
-    // await this.setUnavailable();
-
     this.log('device:onInit');
-    // const data = this.getData();
     const store = this.getStore();
-
-    // const devices = await this.homey.app.homeyAPI.devices.getDevices({
-    //   filter: {
-    //     driverId: 'desktop',
-    //     driverUri: 'homey:app:nl.jwienk.desktop-device',
-    //   },
-    // });
-
-    // const device = Object.values(devices).find((device) => {
-    //   return device.data.id === data.id;
-    // });
-
     this.apiId = this.getAppId();
 
     this.socket = io(`https://${store.address}:${store.port}`, {
@@ -143,62 +122,22 @@ class DesktopDevice extends Homey.Device {
     this.log('onLastSeenChanged', discoveryResult);
   }
 
-  async handleButtonsSync(data, callback) {
-    this.log('buttons:sync');
-    const buttons = await this.setButtons(data.buttons);
-    const flows = await this.homey.app.homeyAPI.flow.getFlows();
-    const broken = getBrokenButtons(buttons, flows, this);
-    callback({ broken });
-  }
-
   async handleButtonRun(data) {
     this.log('button:run', data);
     try {
-      await this.driver.triggerDeviceButtonCard.trigger(
-        this,
-        { token: 1 },
-        data
-      );
+      await this.driver.triggerDeviceButtonCard.trigger(this, {}, data);
     } catch (error) {
       this.error(error);
     }
-  }
-
-  async handleAcceleratorsSync(data, callback) {
-    this.log('accelerators:sync');
-    const accelerators = await this.setAccelerators(data.accelerators);
-    const flows = await this.homey.app.homeyAPI.flow.getFlows();
-    const broken = getBrokenAccelerators(accelerators, flows, this);
-    callback({ broken });
   }
 
   async handleAcceleratorRun(data) {
     this.log('accelerator:run', data);
     try {
-      await this.driver.triggerDeviceAcceleratorCard.trigger(
-        this,
-        { token: 1 },
-        data
-      );
+      await this.driver.triggerDeviceAcceleratorCard.trigger(this, {}, data);
     } catch (error) {
       this.error(error);
     }
-  }
-
-  async handleDisplaysSync(data, callback) {
-    this.log('displays:sync');
-    const displays = await this.setDisplays(data.displays);
-    const flows = await this.homey.app.homeyAPI.flow.getFlows();
-    const broken = getBrokenDisplays(displays, flows, this);
-    callback({ broken });
-  }
-
-  async handleInputsSync(data, callback) {
-    this.log('inputs:sync');
-    const inputs = await this.setInputs(data.inputs);
-    const flows = await this.homey.app.homeyAPI.flow.getFlows();
-    const broken = getBrokenInputs(inputs, flows, this);
-    callback({ broken });
   }
 
   async handleInputRun(data) {
@@ -222,6 +161,30 @@ class DesktopDevice extends Homey.Device {
     } catch (error) {
       this.error(error);
     }
+  }
+
+  async handleButtonsSync(data, callback) {
+    this.log('buttons:sync');
+    await this.setButtons(data.buttons);
+    callback({ broken: [] });
+  }
+
+  async handleAcceleratorsSync(data, callback) {
+    this.log('accelerators:sync');
+    await this.setAccelerators(data.accelerators);
+    callback({ broken: [] });
+  }
+
+  async handleDisplaysSync(data, callback) {
+    this.log('displays:sync');
+    await this.setDisplays(data.displays);
+    callback({ broken: [] });
+  }
+
+  async handleInputsSync(data, callback) {
+    this.log('inputs:sync');
+    await this.setInputs(data.inputs);
+    callback({ broken: [] });
   }
 
   getButtons() {

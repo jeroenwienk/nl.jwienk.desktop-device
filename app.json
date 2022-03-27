@@ -69,6 +69,9 @@
           {
             "type": "autocomplete",
             "name": "button",
+            "title": {
+              "en": "Button"
+            },
             "placeholder": {
               "en": "Search for a button..."
             }
@@ -92,42 +95,12 @@
           {
             "type": "autocomplete",
             "name": "accelerator",
+            "title": {
+              "en": "Shortcut"
+            },
             "placeholder": {
               "en": "Search for a shortcut..."
             }
-          }
-        ]
-      },
-      {
-        "id": "trigger_command",
-        "title": {
-          "en": "A command is executed..."
-        },
-        "titleFormatted": {
-          "en": "A command with output ID [[outputId]] is executed"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=desktop"
-          },
-          {
-            "type": "text",
-            "name": "outputId",
-            "placeholder": {
-              "en": "Output ID"
-            }
-          }
-        ],
-        "tokens": [
-          {
-            "name": "output",
-            "type": "string",
-            "title": {
-              "en": "Output"
-            },
-            "example": "Command output"
           }
         ]
       },
@@ -148,6 +121,9 @@
           {
             "type": "autocomplete",
             "name": "input",
+            "title": {
+              "en": "Input"
+            },
             "placeholder": {
               "en": "Search for an input..."
             }
@@ -183,6 +159,9 @@
           {
             "type": "autocomplete",
             "name": "input",
+            "title": {
+              "en": "Input"
+            },
             "placeholder": {
               "en": "Search for an input..."
             }
@@ -196,6 +175,42 @@
               "en": "Content"
             },
             "example": 1
+          }
+        ]
+      },
+      {
+        "id": "trigger_command",
+        "title": {
+          "en": "A command is executed..."
+        },
+        "titleFormatted": {
+          "en": "A command with output id [[outputId]] is executed"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=desktop"
+          },
+          {
+            "type": "text",
+            "name": "outputId",
+            "title": {
+              "en": "OutputID"
+            },
+            "placeholder": {
+              "en": "10"
+            }
+          }
+        ],
+        "tokens": [
+          {
+            "name": "output",
+            "type": "string",
+            "title": {
+              "en": "Output"
+            },
+            "example": "Command output"
           }
         ]
       }
@@ -221,8 +236,11 @@
           {
             "type": "text",
             "name": "url",
-            "placeholder": {
+            "title": {
               "en": "URL"
+            },
+            "placeholder": {
+              "en": "https://www.google.com"
             }
           }
         ]
@@ -247,8 +265,119 @@
           {
             "type": "text",
             "name": "path",
-            "placeholder": {
+            "title": {
               "en": "Path"
+            },
+            "placeholder": {
+              "en": "/some/path/file.txt"
+            }
+          }
+        ]
+      },
+      {
+        "id": "action_display_set",
+        "title": {
+          "en": "Set a display value..."
+        },
+        "titleFormatted": {
+          "en": "Set [[display]] to [[text]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=desktop"
+          },
+          {
+            "type": "autocomplete",
+            "name": "display",
+            "title": {
+              "en": "Display"
+            },
+            "placeholder": {
+              "en": "Search for a display..."
+            }
+          },
+          {
+            "type": "text",
+            "name": "text",
+            "title": {
+              "en": "Text"
+            },
+            "placeholder": {
+              "en": "Display value"
+            }
+          }
+        ]
+      },
+      {
+        "id": "action_window_action",
+        "title": {
+          "en": "Perform an action on a window..."
+        },
+        "titleFormatted": {
+          "en": "Perform action [[action]] on [[window]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=desktop"
+          },
+          {
+            "type": "autocomplete",
+            "name": "action",
+            "title": {
+              "en": "Action"
+            },
+            "placeholder": {
+              "en": "Search for an action..."
+            }
+          },
+          {
+            "type": "autocomplete",
+            "name": "window",
+            "title": {
+              "en": "Window"
+            },
+            "placeholder": {
+              "en": "Search for a window..."
+            }
+          }
+        ]
+      },
+      {
+        "id": "action_window_move",
+        "title": {
+          "en": "Move window to screen..."
+        },
+        "titleFormatted": {
+          "en": "Move window [[window]] to screen [[screen]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=desktop"
+          },
+          {
+            "type": "autocomplete",
+            "name": "window",
+            "title": {
+              "en": "Window"
+            },
+            "placeholder": {
+              "en": "Search for a window..."
+            }
+          },
+          {
+            "type": "autocomplete",
+            "name": "screen",
+            "title": {
+              "en": "Screen"
+            },
+            "placeholder": {
+              "en": "Search for a screen..."
             }
           }
         ]
@@ -259,7 +388,7 @@
           "en": "Create a desktop notification with..."
         },
         "titleFormatted": {
-          "en": "Create a desktop notification with title [[title]] and message [[body]] and [[silent]]"
+          "en": "Create a desktop notification with title [[title]], message [[body]] and [[silent]]"
         },
         "args": [
           {
@@ -270,31 +399,40 @@
           {
             "type": "text",
             "name": "title",
-            "placeholder": {
+            "title": {
               "en": "Title"
+            },
+            "placeholder": {
+              "en": "My Flow"
             }
           },
           {
             "type": "text",
             "name": "body",
-            "placeholder": {
+            "title": {
               "en": "Message"
+            },
+            "placeholder": {
+              "en": "Hello there."
             }
           },
           {
             "type": "dropdown",
             "name": "silent",
+            "title": {
+              "en": "Sound"
+            },
             "values": [
-              {
-                "id": "true",
-                "label": {
-                  "en": "Sound Disabled"
-                }
-              },
               {
                 "id": "false",
                 "label": {
-                  "en": "Sound Enabled"
+                  "en": "Enabled"
+                }
+              },
+              {
+                "id": "true",
+                "label": {
+                  "en": "Disabled"
                 }
               }
             ]
@@ -307,10 +445,10 @@
           "en": "Run a command..."
         },
         "titleFormatted": {
-          "en": "Run command [[command]] with timeout [[timeout]] and working directory [[cwd]] and output ID [[outputId]]"
+          "en": "Run command [[command]] with timeout [[timeout]], working directory [[cwd]] and output ID [[outputId]]"
         },
         "hint": {
-          "en": "To do something with the output you can specify an output ID. Then use a when card in a different Flow that responds to your specified output ID."
+          "en": "To do something with the output you can specify an OutputID. Then use a when card in a different Flow that responds to your specified OutputID."
         },
         "args": [
           {
@@ -355,66 +493,36 @@
             "type": "text",
             "name": "outputId",
             "title": {
-              "en": "Output ID"
+              "en": "OutputID"
             },
             "placeholder": {
-              "en": "e.g. 1, output git status"
+              "en": "10"
             }
           }
         ]
       },
       {
-        "id": "action_display_set",
+        "id": "action_web_app_execute_code",
         "title": {
-          "en": "Set a display value..."
+          "en": "Execute code in web app window..."
         },
         "titleFormatted": {
-          "en": "Set [[display]] to [[text]]"
+          "en": "Execute code [[code]] in web app window"
         },
         "args": [
           {
             "type": "device",
             "name": "device",
             "filter": "driver_id=desktop"
-          },
-          {
-            "type": "autocomplete",
-            "name": "display",
-            "placeholder": {
-              "en": "Search for a display..."
-            }
           },
           {
             "type": "text",
-            "name": "text",
+            "name": "code",
             "title": {
-              "en": "Text"
+              "en": "Code"
             },
             "placeholder": {
-              "en": "Display value"
-            }
-          }
-        ]
-      },
-      {
-        "id": "action_window_open",
-        "title": {
-          "en": "Open an app window..."
-        },
-        "titleFormatted": {
-          "en": "Open app window [[window]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=desktop"
-          },
-          {
-            "type": "autocomplete",
-            "name": "window",
-            "placeholder": {
-              "en": "Search for a window..."
+              "en": "window.router.history.push('/devices')."
             }
           }
         ]

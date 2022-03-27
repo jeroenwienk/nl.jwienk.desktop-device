@@ -11,24 +11,20 @@ const IO_ON = {
 const IO_EMIT = {
   BROWSER_OPEN_RUN: 'browser:open:run',
   PATH_OPEN_RUN: 'path:open:run',
-  WINDOW_OPEN_RUN: 'window:open:run',
+  WINDOW_ACTION_RUN: 'window:action:run',
+  WINDOW_MOVE_RUN: 'window:move:run',
   COMMAND_RUN: 'command:run',
-  BUTTON_RUN_SUCCESS: 'button:run:success',
-  BUTTON_RUN_ERROR: 'button:run:error',
-  FLOW_BUTTON_SAVED: 'flow:button:saved',
-  ACCELERATOR_RUN_SUCCESS: 'accelerator:run:success',
-  ACCELERATOR_RUN_ERROR: 'accelerator:run:error',
-  FLOW_ACCELERATOR_SAVED: 'flow:accelerator:saved',
+  WEB_APP_EXECUTE_CODE_RUN: 'web:app:execute:code:run',
   NOTIFICATION_SHOW_RUN: 'notification:show:run',
+  SCREENS_FETCH: 'screens:fetch',
   DISPLAY_SET_RUN: 'display:set:run',
+  FLOW_BUTTON_SAVED: 'flow:button:saved',
+  FLOW_ACCELERATOR_SAVED: 'flow:accelerator:saved',
   FLOW_DISPLAY_SAVED: 'flow:display:saved',
-  INPUT_RUN_SUCCESS: 'input:run:success',
-  INPUT_RUN_ERROR: 'input:run:error',
   FLOW_INPUT_SAVED: 'flow:input:saved',
 };
 
-
 module.exports = {
   IO_EMIT,
-  IO_ON
+  IO_ON,
 };

@@ -30,12 +30,15 @@ class DesktopDriver extends Homey.Driver {
     this.registerTriggerCommand();
     this.registerTriggerInputText();
     this.registerTriggerInputNumber();
+
     this.registerActionBrowserOpen();
     this.registerActionPathOpen();
     this.registerActionNotificationShow();
     this.registerActionCommand();
     this.registerActionDisplaySet();
-    this.registerActionWindowOpen();
+    this.registerActionWindowAction();
+    this.registerActionWindowMove();
+    this.registerActionWebAppExecuteCode();
   }
 
   async onPairListDevices() {
@@ -52,9 +55,6 @@ class DesktopDriver extends Homey.Driver {
         data: {
           id: discoveryResult.id,
           mac: discoveryResult.txt.mac,
-          address: discoveryResult.address,
-          host: discoveryResult.host,
-          port: discoveryResult.port,
           name: discoveryResult.name,
           fullname: discoveryResult.fullname,
         },
@@ -109,19 +109,9 @@ class DesktopDriver extends Homey.Driver {
 
   registerTriggerButton() {
     this.triggerDeviceButtonCard.registerRunListener(async (args, state) => {
-      const { device, button } = args;
+      const { button } = args;
 
-      if (state.id === button.id) {
-        try {
-          device.socket.volatile.emit(IO_EMIT.BUTTON_RUN_SUCCESS, button);
-        } catch (error) {
-          this.error(error);
-        }
-
-        return true;
-      }
-
-      return false;
+      return state.id === button.id;
     });
 
     this.triggerDeviceButtonCard.registerArgumentAutocompleteListener(
@@ -154,22 +144,9 @@ class DesktopDriver extends Homey.Driver {
   registerTriggerAccelerator() {
     this.triggerDeviceAcceleratorCard.registerRunListener(
       async (args, state) => {
-        const { device, accelerator } = args;
+        const { accelerator } = args;
 
-        if (state.id === accelerator.id) {
-          try {
-            device.socket.volatile.emit(
-              IO_EMIT.ACCELERATOR_RUN_SUCCESS,
-              accelerator
-            );
-          } catch (error) {
-            this.error(error);
-          }
-
-          return true;
-        }
-
-        return false;
+        return state.id === accelerator.id;
       }
     );
 
@@ -202,33 +179,17 @@ class DesktopDriver extends Homey.Driver {
 
   registerTriggerCommand() {
     this.triggerDeviceCommandCard.registerRunListener(async (args, state) => {
-      const { device, outputId } = args;
+      const { outputId } = args;
 
-      if (state.outputId === outputId) {
-        return true;
-      }
-
-      return false;
+      return state.outputId === outputId;
     });
-
-    this.triggerDeviceCommandCard.on('update', () => {});
   }
 
   registerTriggerInputText() {
     this.triggerDeviceInputTextCard.registerRunListener(async (args, state) => {
-      const { device, input } = args;
+      const { input } = args;
 
-      if (state.id === input.id) {
-        try {
-          device.socket.volatile.emit(IO_EMIT.INPUT_RUN_SUCCESS, input);
-        } catch (error) {
-          this.error(error);
-        }
-
-        return true;
-      }
-
-      return false;
+      return state.id === input.id;
     });
 
     this.triggerDeviceInputTextCard.registerArgumentAutocompleteListener(
@@ -265,19 +226,9 @@ class DesktopDriver extends Homey.Driver {
   registerTriggerInputNumber() {
     this.triggerDeviceInputNumberCard.registerRunListener(
       async (args, state) => {
-        const { device, input } = args;
+        const { input } = args;
 
-        if (state.id === input.id) {
-          try {
-            device.socket.volatile.emit(IO_EMIT.INPUT_RUN_SUCCESS, input);
-          } catch (error) {
-            this.error(error);
-          }
-
-          return true;
-        }
-
-        return false;
+        return state.id === input.id;
       }
     );
 
@@ -318,19 +269,21 @@ class DesktopDriver extends Homey.Driver {
     action.registerRunListener(async (args, state) => {
       const { device, url } = args;
 
-      device.socket.volatile.emit(
-        IO_EMIT.BROWSER_OPEN_RUN,
-        { url },
-        (error) => {
-          if (error) {
-            this.error(error);
+      return new Promise((resolve, reject) => {
+        device.socket.volatile.emit(
+          IO_EMIT.BROWSER_OPEN_RUN,
+          { url },
+          (error) => {
+            if (error) {
+              this.error(error);
+              reject(error);
+            } else {
+              resolve(true);
+            }
           }
-        }
-      );
-      return true;
+        );
+      });
     });
-
-    action.on('update', () => {});
   }
 
   registerActionPathOpen() {
@@ -339,15 +292,21 @@ class DesktopDriver extends Homey.Driver {
     action.registerRunListener(async (args, state) => {
       const { device, path } = args;
 
-      device.socket.volatile.emit(IO_EMIT.PATH_OPEN_RUN, { path }, (error) => {
-        if (error) {
-          this.error(error);
-        }
+      return new Promise((resolve, reject) => {
+        device.socket.volatile.emit(
+          IO_EMIT.PATH_OPEN_RUN,
+          { path },
+          (error) => {
+            if (error) {
+              this.error(error);
+              reject(error);
+            } else {
+              resolve(true);
+            }
+          }
+        );
       });
-      return true;
     });
-
-    action.on('update', () => {});
   }
 
   registerActionNotificationShow() {
@@ -356,19 +315,311 @@ class DesktopDriver extends Homey.Driver {
     action.registerRunListener(async (args, state) => {
       const { device, title, body, silent } = args;
 
-      device.socket.volatile.emit(
-        IO_EMIT.NOTIFICATION_SHOW_RUN,
-        { title, body, silent },
-        (error) => {
-          if (error) {
-            this.error(error);
+      return new Promise((resolve, reject) => {
+        device.socket.volatile.emit(
+          IO_EMIT.NOTIFICATION_SHOW_RUN,
+          { title, body, silent },
+          (error) => {
+            if (error) {
+              this.error(error);
+              reject(error);
+            } else {
+              resolve(true);
+            }
           }
-        }
-      );
-      return true;
+        );
+      });
+    });
+  }
+
+  registerActionWindowAction() {
+    const action = this.homey.flow.getActionCard('action_window_action');
+
+    action.registerRunListener(async (args, state) => {
+      const { device, window, action } = args;
+
+      return new Promise((resolve, reject) => {
+        device.socket.volatile.emit(
+          IO_EMIT.WINDOW_ACTION_RUN,
+          { window, action },
+          (error) => {
+            if (error) {
+              this.error(error);
+              reject(error);
+            } else {
+              resolve(true);
+            }
+          }
+        );
+      });
     });
 
-    action.on('update', () => {});
+    action.registerArgumentAutocompleteListener(
+      'window',
+      async (query, args) => {
+        return [
+          {
+            id: 'main',
+            name: 'Main',
+            description: 'The main app window.',
+          },
+          {
+            id: 'overlay',
+            name: 'Overlay',
+            description: 'The overlay window.',
+          },
+          {
+            id: 'web_app',
+            name: 'Web App',
+            description: 'The web app window.',
+          },
+        ]
+          .map((window) => {
+            return {
+              id: window.id,
+              name: window.name,
+              description: window.description,
+            };
+          })
+          .filter((window) => {
+            return this.matchesNameOrDescription(window, query);
+          });
+      }
+    );
+
+    action.registerArgumentAutocompleteListener(
+      'action',
+      async (query, args) => {
+        return [
+          {
+            id: 'open',
+            name: 'open',
+            description: 'Shows and gives focus to the window.',
+          },
+          {
+            id: 'close',
+            name: 'close',
+            description: 'Hides the window.',
+          },
+          {
+            id: 'toggle',
+            name: 'toggle',
+            description: 'Shows or hides a window.',
+          },
+          {
+            id: 'maximize',
+            name: 'maximize',
+            description:
+              "Maximizes the window. This will also show (but not focus) the window if it isn't being displayed already.",
+          },
+          {
+            id: 'unmaximize',
+            name: 'unmaximize',
+            description: 'Unmaximizes the window.',
+          },
+          {
+            id: 'minimize',
+            name: 'minimize',
+            description:
+              'Minimizes the window. On some platforms the minimized window will be shown in the Dock.',
+          },
+          {
+            id: 'restore',
+            name: 'restore',
+            description:
+              'Restores the window from minimized state to its previous state.',
+          },
+          {
+            id: 'focus',
+            name: 'focus',
+            description: 'Focuses on the window.',
+          },
+          {
+            id: 'blur',
+            name: 'blur',
+            description: 'Removes focus from the window.',
+          },
+        ]
+          .map((action) => {
+            return {
+              id: action.id,
+              name: action.name,
+              description: action.description,
+            };
+          })
+          .filter((action) => {
+            return this.matchesNameOrDescription(action, query);
+          });
+      }
+    );
+  }
+
+  registerActionWebAppExecuteCode() {
+    const action = this.homey.flow.getActionCard('action_web_app_execute_code');
+
+    action.registerRunListener(async (args, state) => {
+      const { device, code } = args;
+
+      return new Promise((resolve, reject) => {
+        device.socket.volatile.emit(
+          IO_EMIT.WEB_APP_EXECUTE_CODE_RUN,
+          { code },
+          (error, result) => {
+            if (error) {
+              this.error(error);
+              reject(error);
+            } else {
+              this.log(result);
+              resolve(true);
+            }
+          }
+        );
+      });
+    });
+  }
+
+  registerActionWindowMove() {
+    const action = this.homey.flow.getActionCard('action_window_move');
+
+    action.registerRunListener(async (args, state) => {
+      const { device, window, screen } = args;
+
+      return new Promise((resolve, reject) => {
+        device.socket.volatile.emit(
+          IO_EMIT.WINDOW_MOVE_RUN,
+          { window, screen },
+          (error) => {
+            if (error) {
+              this.error(error);
+              reject(error);
+            } else {
+              resolve(true);
+            }
+          }
+        );
+      });
+    });
+
+    action.registerArgumentAutocompleteListener(
+      'window',
+      async (query, args) => {
+        return [
+          {
+            id: 'main',
+            name: 'Main',
+            description: 'The main app window.',
+          },
+          {
+            id: 'overlay',
+            name: 'Overlay',
+            description: 'The overlay window.',
+          },
+          {
+            id: 'web_app',
+            name: 'Web App',
+            description: 'The web app window.',
+          },
+        ]
+          .map((window) => {
+            return {
+              id: window.id,
+              name: window.name,
+              description: window.description,
+            };
+          })
+          .filter((window) => {
+            return this.matchesNameOrDescription(window, query);
+          });
+      }
+    );
+
+    action.registerArgumentAutocompleteListener(
+      'screen',
+      async (query, args) => {
+        return new Promise((resolve, reject) => {
+          let timeoutRejected = false;
+          const callback = (error, data) => {
+            if (timeoutRejected === true) return;
+
+            if (error != null) {
+              reject(error);
+              return;
+            }
+
+            if (data != null && data.screens != null) {
+              const filtered = data.screens
+                .map((screen) => {
+                  return {
+                    id: String(screen.id),
+                    name: `${screen.id} (${screen.size.width}x${screen.size.height})`,
+                    description: `x : ${screen.bounds.x}, y: ${screen.bounds.y}`,
+                  };
+                })
+                .filter((action) => {
+                  return this.matchesNameOrDescription(action, query);
+                });
+
+              resolve(filtered);
+            }
+          };
+
+          this.homey.setTimeout(() => {
+            timeoutRejected = true;
+            reject(new Error('timeout'));
+          }, 10000);
+          args.device.socket.volatile.emit(IO_EMIT.SCREENS_FETCH, {}, callback);
+        });
+      }
+    );
+  }
+
+  registerActionDisplaySet() {
+    const action = this.homey.flow.getActionCard('action_display_set');
+
+    action.registerRunListener(async (args, state) => {
+      const { device, display, text } = args;
+
+      return new Promise((resolve, reject) => {
+        device.socket.volatile.emit(
+          IO_EMIT.DISPLAY_SET_RUN,
+          { display, text },
+          (error) => {
+            if (error) {
+              this.error(error);
+              reject(error);
+            } else {
+              resolve(true);
+            }
+          }
+        );
+      });
+    });
+
+    action.registerArgumentAutocompleteListener(
+      'display',
+      async (query, args) => {
+        const { device } = args;
+        const displays = device.getDisplays();
+
+        return displays
+          .map((display) => {
+            return {
+              id: display.id,
+              name: display.name,
+              description: display.description,
+            };
+          })
+          .filter((display) => {
+            return this.matchesNameOrDescription(display, query);
+          });
+      }
+    );
+
+    action.on('update', () => {
+      this.getDevices().forEach((device) => {
+        device.socket.volatile.emit(IO_EMIT.FLOW_DISPLAY_SAVED);
+      });
+    });
   }
 
   registerActionCommand() {
@@ -427,94 +678,6 @@ class DesktopDriver extends Homey.Driver {
         return false;
       }
     });
-
-    action.on('update', () => {});
-  }
-
-  registerActionDisplaySet() {
-    const action = this.homey.flow.getActionCard('action_display_set');
-
-    action.registerRunListener(async (args, state) => {
-      const { device, display, text } = args;
-
-      device.socket.volatile.emit(
-        IO_EMIT.DISPLAY_SET_RUN,
-        { display, text },
-        (error) => {
-          if (error) {
-            this.error(error);
-          }
-        }
-      );
-      return true;
-    });
-
-    action.registerArgumentAutocompleteListener(
-      'display',
-      async (query, args) => {
-        const { device } = args;
-        const displays = device.getDisplays();
-
-        return displays
-          .map((display) => {
-            return {
-              id: display.id,
-              name: display.name,
-              description: display.description,
-            };
-          })
-          .filter((display) => {
-            return this.matchesNameOrDescription(display, query);
-          });
-      }
-    );
-
-    action.on('update', () => {
-      this.getDevices().forEach((device) => {
-        device.socket.volatile.emit(IO_EMIT.FLOW_DISPLAY_SAVED);
-      });
-    });
-  }
-
-  registerActionWindowOpen() {
-    const action = this.homey.flow.getActionCard('action_window_open');
-
-    action.registerRunListener(async (args, state) => {
-      const { device, window } = args;
-
-      device.socket.volatile.emit(
-        IO_EMIT.WINDOW_OPEN_RUN,
-        { window },
-        (error) => {
-          if (error) {
-            this.error(error);
-          }
-        }
-      );
-      return true;
-    });
-
-    action.registerArgumentAutocompleteListener(
-      'window',
-      async (query, args) => {
-        // const { device } = args;
-        // const windows = device.getWindows();
-
-        return ['main', 'overlay', 'webapp']
-          .map((display) => {
-            return {
-              id: display,
-              name: display,
-              description: display,
-            };
-          })
-          .filter((display) => {
-            return this.matchesNameOrDescription(display, query);
-          });
-      }
-    );
-
-    action.on('update', () => {});
   }
 
   matchesNameOrDescription(value, query) {
