@@ -213,6 +213,75 @@
             "example": "Command output"
           }
         ]
+      },
+      {
+        "id": "trigger_commander_event",
+        "title": {
+          "en": "Command was send..."
+        },
+        "titleFormatted": {
+          "en": "Command [[command]] was send with hint [[hint]] and description [[description]]"
+        },
+        "hint": {
+          "en": "The filled in command name will become an option in de command palette."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=desktop"
+          },
+          {
+            "type": "text",
+            "name": "command",
+            "title": {
+              "en": "Command"
+            },
+            "placeholder": {
+              "en": "Set Dim"
+            }
+          },
+          {
+            "type": "text",
+            "name": "hint",
+            "required": false,
+            "title": {
+              "en": "Hint (optional)"
+            },
+            "placeholder": {
+              "en": "expects number 0-1"
+            }
+          },
+          {
+            "type": "text",
+            "name": "description",
+            "required": false,
+            "title": {
+              "en": "Description (optional)"
+            },
+            "placeholder": {
+              "en": "Set the dim of my device"
+            }
+          }
+        ],
+        "tokens": [
+          {
+            "name": "inputAsString",
+            "type": "string",
+            "title": {
+              "en": "Arguments"
+            },
+            "example": "-v"
+          },
+          {
+            "name": "inputAsNumber",
+            "type": "number",
+            "title": {
+              "en": "Arguments"
+            },
+            "example": "0.5"
+          }
+        ]
       }
     ],
     "actions": [

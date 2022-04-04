@@ -3,7 +3,7 @@
 const Homey = require('homey');
 const io = require('socket.io-client');
 
-const { IO_ON, IO_EMIT } = require('./events');
+const { IO_ON, IO_EMIT, events } = require('./events');
 
 class DesktopDevice extends Homey.Device {
   static KEYS = {
@@ -16,13 +16,13 @@ class DesktopDevice extends Homey.Device {
   async onInit() {
     this.log('device:onInit');
     const store = this.getStore();
-    this.apiId = this.getAppId();
 
     this.socket = io(`https://${store.address}:${store.port}`, {
       path: '/desktop',
       rejectUnauthorized: false, // selfsigned certificate
       query: {
         cloudId: this.homey.app.systemInfo.cloudId,
+        homeyId: await this.homey.cloud.getHomeyId(),
         name: this.homey.app.systemName,
       },
     });
@@ -32,6 +32,8 @@ class DesktopDevice extends Homey.Device {
       // using socket.volatile.emit for now
       this.socket.sendBuffer = [];
       this.log('connect:', this.socket.id);
+
+      this.driver.sendTriggerCommanderEventArgumentValues(this);
     });
 
     this.socket.on('disconnect', (reason) => {
@@ -78,8 +80,8 @@ class DesktopDevice extends Homey.Device {
       this.handleButtonRun(data, callback);
     });
 
-    this.socket.on(IO_ON.ACCELERATORS_SYNC, (data, callback) => {
-      this.handleAcceleratorsSync(data, callback);
+    this.socket.on(IO_ON.ACCELERATORS_SYNC, (data) => {
+      this.handleAcceleratorsSync(data);
     });
 
     this.socket.on(IO_ON.ACCELERATOR_RUN, (data, callback) => {
@@ -97,10 +99,80 @@ class DesktopDevice extends Homey.Device {
     this.socket.on(IO_ON.INPUT_RUN, (data, callback) => {
       this.handleInputRun(data, callback);
     });
+
+    this.socket.on(events.GET_API_PROPS, (data, callback) => {
+      Promise.all([
+        this.homey.api.getOwnerApiToken(),
+        this.homey.api.getLocalUrl(),
+      ])
+        .then(([token, url]) => {
+          callback(null, { data: { token, url } });
+        })
+        .catch((error) => {
+          callback(error);
+        });
+    });
+
+    this.socket.on(events.GET_COMMAND_ARGUMENT_VALUES, (args, callback) => {
+      const responsePromise =
+        this.driver.getTriggerCommanderEventArgumentValuesResponse(this);
+
+      Promise.all([responsePromise])
+        .then(([response]) => {
+          callback(null, response);
+        })
+        .catch((error) => {
+          callback(error);
+        });
+    });
+
+    this.socket.on(events.SEND_COMMAND, (args, callback) => {
+      this.log(args);
+      const command = args.data.command;
+      const input = args.data.input;
+
+      let inputAsString = '';
+      if (input != null) {
+        inputAsString = input;
+      }
+
+      let inputAsNumber = parseFloat(input);
+      if (Number.isNaN(inputAsNumber)) {
+        // this is a hack lol
+        inputAsNumber = Number.NEGATIVE_INFINITY;
+        // inputAsNumber = Number.MIN_SAFE_INTEGER;
+      }
+
+      this.log({
+        inputAsString,
+        inputAsNumber,
+      });
+
+      const responsePromise = this.driver.triggerCommanderEvent.trigger(
+        this,
+        {
+          inputAsString: inputAsString,
+          inputAsNumber: inputAsNumber,
+        },
+        {
+          command,
+        }
+      );
+
+      Promise.all([responsePromise])
+        .then(([response]) => {
+          this.log(response);
+          callback(null, response);
+        })
+        .catch((error) => {
+          this.error(error);
+          callback(error);
+        });
+    });
   }
 
-  async ready() {
-    this.log('device:ready');
+  async send({ event, args, callback }) {
+    this.socket.volatile.emit(event, args, callback);
   }
 
   onDiscoveryResult(discoveryResult) {
@@ -163,28 +235,24 @@ class DesktopDevice extends Homey.Device {
     }
   }
 
-  async handleButtonsSync(data, callback) {
+  async handleButtonsSync(data) {
     this.log('buttons:sync');
     await this.setButtons(data.buttons);
-    callback({ broken: [] });
   }
 
-  async handleAcceleratorsSync(data, callback) {
+  async handleAcceleratorsSync(data) {
     this.log('accelerators:sync');
     await this.setAccelerators(data.accelerators);
-    callback({ broken: [] });
   }
 
-  async handleDisplaysSync(data, callback) {
+  async handleDisplaysSync(data) {
     this.log('displays:sync');
     await this.setDisplays(data.displays);
-    callback({ broken: [] });
   }
 
-  async handleInputsSync(data, callback) {
+  async handleInputsSync(data) {
     this.log('inputs:sync');
     await this.setInputs(data.inputs);
-    callback({ broken: [] });
   }
 
   getButtons() {

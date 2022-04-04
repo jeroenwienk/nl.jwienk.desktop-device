@@ -2,7 +2,7 @@
 
 const Homey = require('homey');
 
-const { IO_EMIT } = require('./events');
+const { IO_EMIT, events } = require('./events');
 
 class DesktopDriver extends Homey.Driver {
   async onInit() {
@@ -11,6 +11,8 @@ class DesktopDriver extends Homey.Driver {
     this.ready().then(() => {
       this.log('driver:ready');
     });
+
+    this.registerTriggerCommanderEvent();
 
     this.triggerDeviceButtonCard =
       this.homey.flow.getDeviceTriggerCard('trigger_button');
@@ -106,6 +108,62 @@ class DesktopDriver extends Homey.Driver {
   //     });
   //   });
   // }
+
+  async getTriggerCommanderEventArgumentValues(device) {
+    return await this.triggerCommanderEvent.getArgumentValues(device);
+  }
+
+  async getTriggerCommanderEventArgumentValuesResponse(device) {
+    /**
+     * Three cases
+     * - On app restart send on connection established
+     * - On flow save
+     * - On requested by desktop app
+     *
+     */
+
+    const result = await this.getTriggerCommanderEventArgumentValues(device);
+    const homeyId = await this.homey.cloud.getHomeyId();
+
+    return {
+      data: {
+        homeyId: homeyId,
+        arguments: result,
+      },
+    };
+  }
+
+  async sendTriggerCommanderEventArgumentValues(device) {
+    const response = await this.getTriggerCommanderEventArgumentValuesResponse(
+      device
+    );
+    device.send({
+      event: events.ON_COMMAND_ARGUMENT_VALUES,
+      args: response,
+    });
+  }
+
+  sendArgumentValues() {
+    for (const device of this.getDevices()) {
+      this.sendTriggerCommanderEventArgumentValues(device).catch(this.error);
+    }
+  }
+
+  registerTriggerCommanderEvent() {
+    this.triggerCommanderEvent = this.homey.flow.getDeviceTriggerCard(
+      'trigger_commander_event'
+    );
+
+    this.triggerCommanderEvent.registerRunListener(async (args, state) => {
+      this.log('Running command');
+      this.log(state.command === args.command);
+      return state.command === args.command;
+    });
+
+    this.triggerCommanderEvent.on('update', () => {
+      this.sendArgumentValues();
+    });
+  }
 
   registerTriggerButton() {
     this.triggerDeviceButtonCard.registerRunListener(async (args, state) => {
