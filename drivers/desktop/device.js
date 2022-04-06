@@ -10,7 +10,7 @@ class DesktopDevice extends Homey.Device {
     BUTTONS: 'buttons',
     ACCELERATORS: 'accelerators',
     DISPLAYS: 'displays',
-    INPUTS: 'inputs',
+    INPUTS: 'inputs'
   };
 
   async onInit() {
@@ -23,8 +23,8 @@ class DesktopDevice extends Homey.Device {
       query: {
         cloudId: this.homey.app.systemInfo.cloudId,
         homeyId: await this.homey.cloud.getHomeyId(),
-        name: this.homey.app.systemName,
-      },
+        name: this.homey.app.systemName
+      }
     });
 
     this.socket.on('connect', () => {
@@ -103,7 +103,7 @@ class DesktopDevice extends Homey.Device {
     this.socket.on(events.GET_API_PROPS, (data, callback) => {
       Promise.all([
         this.homey.api.getOwnerApiToken(),
-        this.homey.api.getLocalUrl(),
+        this.homey.api.getLocalUrl()
       ])
         .then(([token, url]) => {
           callback(null, { data: { token, url } });
@@ -138,24 +138,24 @@ class DesktopDevice extends Homey.Device {
 
       let inputAsNumber = parseFloat(input);
       if (Number.isNaN(inputAsNumber)) {
-        // this is a hack lol
-        inputAsNumber = Number.NEGATIVE_INFINITY;
+        // Same as Number(null)
+        inputAsNumber = 0;
         // inputAsNumber = Number.MIN_SAFE_INTEGER;
       }
 
       this.log({
         inputAsString,
-        inputAsNumber,
+        inputAsNumber
       });
 
       const responsePromise = this.driver.triggerCommanderEvent.trigger(
         this,
         {
           inputAsString: inputAsString,
-          inputAsNumber: inputAsNumber,
+          inputAsNumber: inputAsNumber
         },
         {
-          command,
+          command
         }
       );
 
