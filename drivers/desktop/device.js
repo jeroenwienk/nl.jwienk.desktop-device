@@ -160,9 +160,9 @@ class DesktopDevice extends Homey.Device {
       );
 
       Promise.all([responsePromise])
-        .then(([response]) => {
-          this.log(response);
-          callback(null, response);
+        .then(([result]) => {
+          this.log('triggerCommanderEvent.trigger:', result);
+          callback(null, result);
         })
         .catch((error) => {
           this.error(error);

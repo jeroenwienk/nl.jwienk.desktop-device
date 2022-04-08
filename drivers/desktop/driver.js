@@ -124,10 +124,12 @@ class DesktopDriver extends Homey.Driver {
 
     const result = await this.getTriggerCommanderEventArgumentValues(device);
     const homeyId = await this.homey.cloud.getHomeyId();
+    const name = this.homey.app.systemName;
 
     return {
       data: {
         homeyId: homeyId,
+        name: name,
         arguments: result,
       },
     };
