@@ -21,8 +21,8 @@ class DesktopDevice extends Homey.Device {
       path: '/desktop',
       rejectUnauthorized: false, // selfsigned certificate
       query: {
-        cloudId: this.homey.app.systemInfo.cloudId,
-        homeyId: await this.homey.cloud.getHomeyId(),
+        cloudId: this.homey.app.systemInfo.cloudId, // remove
+        homeyId: this.homey.app.systemInfo.cloudId,
         name: this.homey.app.systemName
       }
     });
