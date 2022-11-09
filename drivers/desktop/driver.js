@@ -38,9 +38,9 @@ class DesktopDriver extends Homey.Driver {
     this.registerActionNotificationShow();
     this.registerActionCommand();
     this.registerActionDisplaySet();
-    this.registerActionWindowAction();
-    this.registerActionWindowMove();
-    this.registerActionWebAppExecuteCode();
+    // this.registerActionWindowAction();
+    // this.registerActionWindowMove();
+    // this.registerActionWebAppExecuteCode();
   }
 
   async onPairListDevices() {

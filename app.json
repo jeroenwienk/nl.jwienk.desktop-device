@@ -223,7 +223,7 @@
           "en": "Command [[command]] was send with hint [[hint]] and description [[description]]"
         },
         "hint": {
-          "en": "The filled in command name will become an option in de command palette."
+          "en": "The filled in command name will become an option in the command palette."
         },
         "args": [
           {
@@ -380,78 +380,6 @@
         ]
       },
       {
-        "id": "action_window_action",
-        "title": {
-          "en": "Perform an action on a window..."
-        },
-        "titleFormatted": {
-          "en": "Perform action [[action]] on [[window]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=desktop"
-          },
-          {
-            "type": "autocomplete",
-            "name": "action",
-            "title": {
-              "en": "Action"
-            },
-            "placeholder": {
-              "en": "Search for an action..."
-            }
-          },
-          {
-            "type": "autocomplete",
-            "name": "window",
-            "title": {
-              "en": "Window"
-            },
-            "placeholder": {
-              "en": "Search for a window..."
-            }
-          }
-        ]
-      },
-      {
-        "id": "action_window_move",
-        "title": {
-          "en": "Move window to screen..."
-        },
-        "titleFormatted": {
-          "en": "Move window [[window]] to screen [[screen]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=desktop"
-          },
-          {
-            "type": "autocomplete",
-            "name": "window",
-            "title": {
-              "en": "Window"
-            },
-            "placeholder": {
-              "en": "Search for a window..."
-            }
-          },
-          {
-            "type": "autocomplete",
-            "name": "screen",
-            "title": {
-              "en": "Screen"
-            },
-            "placeholder": {
-              "en": "Search for a screen..."
-            }
-          }
-        ]
-      },
-      {
         "id": "action_notification_show",
         "title": {
           "en": "Create a desktop notification with..."
@@ -566,32 +494,6 @@
             },
             "placeholder": {
               "en": "10"
-            }
-          }
-        ]
-      },
-      {
-        "id": "action_web_app_execute_code",
-        "title": {
-          "en": "Execute code in web app window..."
-        },
-        "titleFormatted": {
-          "en": "Execute code [[code]] in web app window"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=desktop"
-          },
-          {
-            "type": "text",
-            "name": "code",
-            "title": {
-              "en": "Code"
-            },
-            "placeholder": {
-              "en": "window.router.history.push('/devices')."
             }
           }
         ]

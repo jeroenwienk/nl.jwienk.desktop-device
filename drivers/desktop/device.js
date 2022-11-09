@@ -172,17 +172,20 @@ class DesktopDevice extends Homey.Device {
   }
 
   async send({ event, args, callback }) {
+    // Volatile events are events that will not be sent if the underlying connection is not ready (a bit like UDP, in terms of reliability).
+    // https://socket.io/docs/v3/emitting-events/#volatile-events
     this.socket.volatile.emit(event, args, callback);
   }
 
   onDiscoveryResult(discoveryResult) {
-    this.log('onDiscoveryResult');
+    this.log('onDiscoveryResult', discoveryResult);
     return discoveryResult.id === this.getData().id;
   }
 
   onDiscoveryAvailable(discoveryResult) {
     this.log('onDiscoveryAvailable', discoveryResult);
     this.setStoreValue('address', discoveryResult.address);
+    this.setAvailable().catch(this.error);
   }
 
   onDiscoveryAddressChanged(discoveryResult) {
