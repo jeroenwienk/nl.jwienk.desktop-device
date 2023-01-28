@@ -16,5 +16,8 @@
   },
   "1.0.7": {
     "en": "dont buffer flow actions on not connected"
+  },
+  "1.0.8": {
+    "en": "Added searchable commands window"
   }
 }
