@@ -1,7 +1,7 @@
 'use strict';
 
 const Homey = require('homey');
-const { HomeyAPI } = require('athom-api');
+const { HomeyAPIApp } = require('homey-api');
 
 // if (process.env.DEBUG === '1') {
 //   require('inspector').open(9229, '0.0.0.0', false);
@@ -15,9 +15,11 @@ class App extends Homey.App {
   }
 
   async initHomeyApi() {
-    this.homeyAPI = await HomeyAPI.forCurrentHomey(this.homey);
-    // this.homeyAPISession = await this.homeyAPI.sessions.getSessionMe();
-
+    this.homeyAPI = new HomeyAPIApp({
+      homey: this.homey,
+    });
+  
+    await this.homeyAPI.login();
     this.systemName = await this.homeyAPI.system.getSystemName();
     this.systemInfo = await this.homeyAPI.system.getInfo();
   }

@@ -67,6 +67,7 @@ class DesktopDriver extends Homey.Driver {
           port: discoveryResult.txt.port,
           platform: discoveryResult.txt.platform,
           hostname: discoveryResult.txt.hostname,
+          fullname: discoveryResult.fullname,
         },
       };
     });
